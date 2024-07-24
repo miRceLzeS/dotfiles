@@ -1,2 +1,4 @@
 ### Change Log
-* nothing special yet
+
+### 7/24
+* modified file structure to support stow
