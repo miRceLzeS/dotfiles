@@ -30,13 +30,7 @@ local plugins = {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			-- fallback on error
-			local name = "miasma"
-			local status, err = pcall(vim.cmd, "colorscheme " .. name)
-			if not status then
-				vim.notify("colorscheme " .. name .. " not found: " .. err)
-				vim.cmd('colorscheme default')
-			end
+			require("plugins/colorscheme")
 		end
 	}
 }
