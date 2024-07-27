@@ -24,24 +24,9 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Add all other plugins here
 local plugins = {
-	-- colorscheme plugin
-	{
-		"xero/miasma.nvim",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			require("plugins/colorscheme")
-		end
-	},
-
-	-- lualine
-	{
-		"nvim-lualine/lualine.nvim",
-		dependencies = {"nvim-tree/nvim-web-devicons"},
-		opts = function()
-			require("plugins/lualine")
-		end
-	}
+	require("plugins/colorscheme"),
+	require("plugins/lualine"),
+	require("plugins/luasnip"),
 }
 
 -- lazy.nvim will load them here
