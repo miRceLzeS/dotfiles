@@ -1,3 +1,4 @@
-require('builtin')
-require('keymaps')
-require('pkgmgr')
+require("options")
+require("keymaps")
+require("autocmds")
+require("pkgmgr")
