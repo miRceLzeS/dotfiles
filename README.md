@@ -2,7 +2,7 @@
 ##### 2024/07/27
 * WYSI
 * changed neovim configs (e.g, options, keymaps, colortheme) together with misspellings
-    - Added plugins today:
+    * Added plugins today:
     1. miasma (colorscheme)
     2. lualine
     3. luasnip

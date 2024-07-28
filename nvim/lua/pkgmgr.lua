@@ -24,9 +24,9 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Add all other plugins here
 local plugins = {
-	require("plugins/colorscheme"),
-	require("plugins/lualine"),
-	require("plugins/luasnip"),
+	require("config/colorscheme"),
+	require("config/lualine"),
+	require("config/luasnip"),
 }
 
 -- lazy.nvim will load them here

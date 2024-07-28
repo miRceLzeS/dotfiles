@@ -23,12 +23,10 @@ local mode_n = "n"
 local mode_v = "v"
 local mode_i = "i"
 local mappings = {
-	-- Format: from | to | mode
-	-- Window navigation
-	{ from = "<Tab>h",	to = "<C-w>h",	mode = { mode_n, mode_v } }
-	{ from = "<Tab>j",	to = "<C-w>j",	mode = { mode_n, mode_v } }
-	{ from = "<Tab>k",	to = "<C-w>k",	mode = { mode_n, mode_v } }
-	{ from = "<Tab>l",	to = "<C-w>l",	mode = { mode_n, mode_v } }
-
-	-- Window resize
+	-- { shortcut = "", operation = "", mode = {} },
+	-- Cursor movement
+	-- Text editing
+	-- Commandline
+	-- Window-relevant operation
+	{ shortcut = "s", operation = "<nop>", mode = { mode_n, mode_v, mode_i } },
 }
