@@ -5,28 +5,31 @@ local opts = {
 	silent = true -- disabling the cmd output from showing up
 }
 
--- :h vim.map.set() for more info
--- Normal mode
--- Window navigation
-vim.keymap.set('n', '<Tab>h', '<C-w>h', opts) -- Navigate to left window
-vim.keymap.set('n', '<Tab>j', '<C-w>j', opts) -- Navigate to bottom window
-vim.keymap.set('n', '<Tab>k', '<C-w>k', opts) -- Navigate to up window
-vim.keymap.set('n', '<Tab>l', '<C-w>l', opts) -- Navigate to right window
-
--- Resize window
-vim.keymap.set('n', '<C-k>', ':resize -4<CR>', opts)
-vim.keymap.set('n', '<C-j>', ':resize +4<CR>', opts)
-vim.keymap.set('n', '<C-h>', ':vertical resize -4<CR>', opts)
-vim.keymap.set('n', '<C-l>', ':vertical resize +4<CR>', opts)
-
 local mode_n = "n"
 local mode_v = "v"
 local mode_i = "i"
 local mappings = {
 	-- { shortcut = "", operation = "", mode = {} },
 	-- Cursor movement
+	{ shortcut = "<leader>h",	operation = "<C-w>h",													mode = { mode_n, mode_v } },
+	{ shortcut = "<leader>j",	operation = "<C-w>j", 													mode = { mode_n, mode_v } },
+	{ shortcut = "<leader>k",	operation = "<C-w>k", 													mode = { mode_n, mode_v } },
+	{ shortcut = "<leader>l",	operation = "<C-w>l", 													mode = { mode_n, mode_v } },
+	{ shortcut = "<leader>x",	operation = "<C-w>x", 													mode = { mode_n, mode_v } },
 	-- Text editing
 	-- Commandline
 	-- Window-relevant operation
-	{ shortcut = "s", operation = "<nop>", mode = { mode_n, mode_v, mode_i } },
+	{ shortcut = "s",			operation = "<nop>",													mode = mode_n },
+	{ shortcut = "sh",			operation = ":leftabove vsplit<CR>:wincmd h<CR>",						mode = mode_n },
+	{ shortcut = "sj",			operation = ":split<CR>:wincmd j<CR>",									mode = mode_n },
+	{ shortcut = "sk",			operation = ":leftabove split<CR>:wincmd k<CR>",						mode = mode_n },
+	{ shortcut = "sl",			operation = ":vsplit<CR>:wincmd l<CR>",									mode = mode_n },
+	{ shortcut = "<C-h>",		operation = ":vertical resize +2<CR>",									mode = mode_n },
+	{ shortcut = "<C-j>",		operation = ":resize -2<CR>",											mode = mode_n },
+	{ shortcut = "<C-k>",		operation = ":resize +2<CR>",											mode = mode_n },
+	{ shortcut = "<C-l>",		operation = ":vertical resize -2<CR>",									mode = mode_n },
 }
+
+for _, mapping in ipairs(mappings) do
+	vim.keymap.set(mapping.mode, mapping.shortcut, mapping.operation, opts)
+end

@@ -1,8 +1,12 @@
 ### Change Log
+##### 2024/07/29
+* added yazi file manager
+* change some keymaps in neovim
+
 ##### 2024/07/27
 * WYSI
 * changed neovim configs (e.g, options, keymaps, colortheme) together with misspellings
-    * Added plugins today:
+    * added plugins today:
     1. miasma (colorscheme)
     2. lualine
     3. luasnip
