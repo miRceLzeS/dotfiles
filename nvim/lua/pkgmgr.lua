@@ -27,6 +27,7 @@ local plugins = {
 	require("config/colorscheme"),
 	require("config/lualine"),
 	require("config/luasnip"),
+	require("config/fzf-lua"),
 }
 
 -- lazy.nvim will load them here

@@ -2,6 +2,7 @@
 ##### 2024/07/29
 * added yazi file manager
 * change some keymaps in neovim
+* add fzf-lua plugins
 
 ##### 2024/07/27
 * WYSI
