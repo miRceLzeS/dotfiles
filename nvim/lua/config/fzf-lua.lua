@@ -1,9 +1,14 @@
 return {
     "ibhagwan/fzf-lua",
-    -- optional for icon support
+    event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    lazy = false,
-    opts = {
-        vim.keymap.set({ "n", "v" }, "<leader>ff", ":FzfLua files<CR>", { noremap = true, silent = true })
+    cmd = "FzfLua",
+    keys = {
+        { "<leader>ff", ":FzfLua files<CR>", mode = { "n", "v" }, desc = "Fzf search files"},
+        { "<leader>fb", ":FzfLua buffers<CR>", mode = { "n", "v" }, desc = "Fzf search buffers"},
     },
+    config = function()
+        local fzf = require("fzf-lua")
+        fzf.setup({ "fzf-native" })
+    end
 }
