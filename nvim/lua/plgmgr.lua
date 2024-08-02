@@ -16,13 +16,28 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- config of the lazy.nvim
+-- plugins' specific confiurations should be in ./config/*.lua
 require("lazy").setup({
     spec = {
         { import = "config" },
     },
-    checker = { enabled = true },
+    checker = { 
+        enabled = true,
+        notify = false,
+    },
     change_detection = {
         enabled = true,
-        notify = true,
+        notify = false,
+    },
+    performance = {
+        rtp = {
+            disabled_plugins = {
+                "gzip",
+                "tarPlugin",
+                "tohtml",
+                "tutor",
+                "zipPlugin",
+            }
+        },
     },
 })
