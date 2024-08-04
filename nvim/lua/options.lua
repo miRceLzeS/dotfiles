@@ -18,18 +18,18 @@ opt.inccommand = "split"
 -- Text editing --
 opt.mouse = "a"
 opt.expandtab = true
-opt.tabstop = 4
-opt.softtabstop = 4
-opt.shiftwidth = 4
+opt.tabstop = 2
+opt.softtabstop = 2
+opt.shiftwidth = 2
 opt.smartindent = true
 
 -- System I/O --
 opt.undofile = true
 opt.scrolloff = 3
 vim.schedule(
-    function()
-        opt.clipboard = "unnamedplus"
-    end
+  function()
+    opt.clipboard = "unnamedplus"
+  end
 )
 opt.updatetime = 100
 opt.timeout = false
