@@ -6,7 +6,6 @@ return {
   "ibhagwan/fzf-lua",
   -- optional for icon support
   dependencies = { "nvim-tree/nvim-web-devicons" },
-  event = "VeryLazy",
   cmd = "FzfLua",
   keys = {
     { "<leader>ff", "<cmd>FzfLua files<CR>", mode = { "n", "v" }, opts_default("switch files") },
