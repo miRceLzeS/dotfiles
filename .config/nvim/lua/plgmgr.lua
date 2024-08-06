@@ -20,7 +20,6 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     { import = "config" },
-    { import = "config/lsp" },
   },
   checker = { 
     enabled = true,
