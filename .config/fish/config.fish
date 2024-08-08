@@ -3,6 +3,6 @@ if status is-interactive
 end
 
 if not pgrep -u (whoami) ssh-agent > /dev/null
-  eval (ssh-agent -s)
+  eval (ssh-agent -c)
   ssh-add ~/.ssh/id_rsa
 end
