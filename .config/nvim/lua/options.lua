@@ -24,13 +24,13 @@ opt.shiftwidth = 2
 opt.smartindent = true
 
 -- System I/O --
-opt.undofile = true
+opt.undofile = false
 opt.scrolloff = 3
-vim.schedule(
-  function()
-    opt.clipboard = "unnamedplus"
-  end
-)
+-- vim.schedule(
+--   function()
+--     opt.clipboard = "unnamedplus"
+--   end
+-- )
 opt.updatetime = 100
 opt.timeout = false
 opt.ttimeoutlen = 0

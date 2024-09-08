@@ -5,13 +5,14 @@ return {
   priority = 1000, -- make sure to load this before all the other start plugins
   -- Optional; default configuration will be used if setup isn't called.
   config = function()
-    require("everforest").setup({
+    local everforest = require("everforest")
+    everforest.setup({
       background = "hard",
       transparent_background_level = 2,
       italics = true,
       disable_italic_comments = false,
       ui_contrast = "high",
     })
-    vim.cmd([[colorscheme everforest]])
+    everforest.load()
   end,
 }

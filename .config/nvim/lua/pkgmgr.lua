@@ -1,4 +1,4 @@
--- Bootstrap lazy.nvim
+-- Bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -21,7 +21,31 @@ require("lazy").setup({
     -- import your plugins
     { import = "plugins" },
   },
-
+  install = {
+    colorscheme = { "everforest" },
+  },
   -- automatically check for plugin updates
-  checker = { enabled = true },
+  checker = { 
+    enabled = false,
+    notify = true,
+  },
+  -- automatically reload on changes but without sending a notification
+  change_detection = {
+    enable = true,
+    notify = false,
+  },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "gzip",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
+    },
+  },
 })
