@@ -6,6 +6,8 @@ if not pgrep -u (id -u) ssh-agent > /dev/null
 	eval (ssh-agent -c)
 	ssh-add ~/.ssh/id_rsa > /dev/null 2>&1
 end
+
 set -Ux EDITOR nvim
 
+zoxide init fish | source
 starship init fish | source
