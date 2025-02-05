@@ -63,9 +63,9 @@ local mappings = {
   { "v",               ">",              ">gv" },
 
   -- unmap
-  { { "n", "v" }, "s", "<nop>" },
-  { "n" , "\\", "<nop>" },
-  { { "n", "i" } , "<F1>", "<nop>" },
+  { { "n", "v" },      "s",              "<nop>" },
+  { "n",               "\\",             "<nop>" },
+  { { "n", "i" },      "<F1>",           "<nop>" },
 }
 
 for _, entry in ipairs(mappings) do
@@ -73,4 +73,3 @@ for _, entry in ipairs(mappings) do
   opts = vim.tbl_deep_extend("force", shared_opts, entry_opts or {})
   vim.keymap.set(modes, lhs, rhs, opts)
 end
-
