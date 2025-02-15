@@ -49,6 +49,7 @@ return {
     },
     event = { "BUfReadPost", "BufWritePost", "BufNewFile" },
     config = function()
+      local lspconfig = require("lspconfig")
       local mason_lspconfig = require("mason-lspconfig")
       local signature = require("lsp_signature")
 
@@ -60,6 +61,7 @@ return {
           "lua_ls",
           "gopls",
           "rust_analyzer",
+          "clangd",
         },
         automatic_installation = {
           exclude = {},
@@ -67,8 +69,9 @@ return {
         handlers = {
           -- automatically setup lsp servers with default config
           function(server_name)
-            require("lspconfig")[server_name].setup({
+            lspconfig[server_name].setup({
               on_attach = function(client, bufnr)
+                -- function signature
                 signature.on_attach({
                   hint_prefix = {
                     above = "↙ ",

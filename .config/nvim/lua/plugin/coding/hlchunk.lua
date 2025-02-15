@@ -13,7 +13,7 @@ return {
           left_bottom = "╰",
           right_arrow = ">",
         },
-        styles = "#31748f",
+        styles = "#ebbcba",
         duration = 100,
         delay = 100,
       },
