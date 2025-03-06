@@ -25,13 +25,15 @@ return {
           ["<S-Tab>"] = { "select_prev", "fallback" },
           ["<C-k>"] = { "scroll_documentation_up", "fallback" },
           ["<C-j>"] = { "scroll_documentation_down", "fallback" },
-          cmdline = {
-            preset = "none",
-            ["<CR>"] = { "accept", "fallback" },
-            ["<Tab>"] = { "select_next", "fallback" },
-            ["<S-Tab>"] = { "select_prev", "fallback" },
-          },
         },
+        -- cmdline = {
+        --   keymap = {
+        --     preset = "none",
+        --     ["<CR>"] = { "accept", "fallback" },
+        --     ["<Tab>"] = { "select_next", "fallback" },
+        --     ["<S-Tab>"] = { "select_prev", "fallback" },
+        --   },
+        -- },
         sources = {
           default = {
             "lsp",
