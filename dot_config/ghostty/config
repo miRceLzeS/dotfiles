@@ -1,0 +1,5 @@
+theme = Rose Pine
+font-family = "Maple Mono NF CN"
+font-size = 20
+background-opacity = 0.75
+macos-option-as-alt = left
