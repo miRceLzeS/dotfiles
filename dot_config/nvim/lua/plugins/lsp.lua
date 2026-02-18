@@ -22,13 +22,19 @@ return {
             vim.lsp.semantic_tokens.stop(args.buf, client.id)
           end
         end)
+        local keymaps = require("keymaps")
         local map = function(lhs, rhs)
           local lhs_full = "<localleader>" .. lhs
-          require("keymaps").map(
-            "n", lhs_full, rhs, { buffer = args.buf }
-          )
+          keymaps.map("n", lhs_full, rhs, { buffer = args.buf })
         end
+        local unmap = function(lhs)
+          keymaps.unmap("n", lhs, { buffer = args.buf })
+        end
+        unmap("gd")
+        unmap("gr")
+        unmap("gD")
         map("d", fzf.lsp_definitions)
+        map("D", fzf.lsp_typedefs)
         map("i", fzf.lsp_implementations)
         map("m", fzf.lsp_workspace_diagnostics)
         map("r", fzf.lsp_references)

@@ -10,6 +10,10 @@ function M.map(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, options)
 end
 
+function M.unmap(mode, lhs, opts)
+  M.map(mode, lhs, "<Nop>")
+end
+
 M.map({ "n" }, "<Esc>", "<Cmd>nohlsearch<CR>")
 
 -- smart up and down movement
@@ -52,7 +56,7 @@ function M.open_df()
   vim.schedule(open_float)
 end
 
-M.map({ "n", "v", "i" }, "<C-w>d", "<Nop>")
+M.unmap({ "n" }, "<C-w>d", "<Nop>")
 -- toggle diagnostic float window
 M.map({ "n", "v", "i" }, "<M-d>f", function()
   local toggle = M.close_df()
