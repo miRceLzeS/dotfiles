@@ -40,5 +40,6 @@ return {
     map({"n"}, leader("fF"), function() fzf.files() end)
     map({"n"}, leader("b"), function() fzf.buffers() end)
     map({"n"}, leader("lg"), function() fzf.live_grep() end)
+    map({"n"}, leader("d"), function() fzf.diagnostics_workspace() end)
   end,
 }
