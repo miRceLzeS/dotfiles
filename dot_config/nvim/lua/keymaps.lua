@@ -13,11 +13,10 @@ M.map({ "n" }, "j", "gj")
 M.map({ "n" }, "k", "gk")
 M.map({ "n", "v", "i" }, "<M-w>", function()
   vim.opt.wrap = not vim.opt.wrap:get()
-  if vim.opt.wrap:get() then
-    vim.opt.linebreak = true
-    vim.opt.breakindent = true
-    vim.opt.showbreak = "↪ "
-  end
+end)
+M.map({ "n", "v", "i" }, "<M-d>", function()
+  local enabled = vim.diagnostic.is_enabled()
+  vim.diagnostic.enable(not enabled)
 end)
 
 return M

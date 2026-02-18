@@ -21,6 +21,18 @@ local tab_spaces = 2
 opt.tabstop = tab_spaces -- number of visual spaces of a tab
 opt.shiftwidth = tab_spaces -- number of spaces when auto indent
 opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
+opt.linebreak = true
+opt.breakindent = true
+opt.showbreak = "↪ "
+
+-- diagnostic
+vim.diagnostic.config({
+  virtual_text = false,
+  virtual_lines = {
+    current_line = true,
+  },
+  update_in_insert = false,
+})
 
 -- io
 opt.undofile = true
