@@ -58,7 +58,7 @@ end
 
 M.unmap({ "n" }, "<C-w>d", "<Nop>")
 -- toggle diagnostic float window
-M.map({ "n", "v", "i" }, "<M-d>f", function()
+M.map({ "n" }, "<M-d>f", function()
   local toggle = M.close_df()
   if toggle then
     return
@@ -66,13 +66,13 @@ M.map({ "n", "v", "i" }, "<M-d>f", function()
   M.open_df()
 end)
 -- goto previous diagnostic
-M.map({ "n", "v", "i" }, "[d", function()
+M.map({ "n" }, "[d", function()
   M.close_df()
   vim.diagnostic.goto_prev()
   M.open_df()
 end)
 -- goto next diagnostic
-M.map({ "n", "v", "i" }, "]d", function()
+M.map({ "n" }, "]d", function()
   M.close_df()
   vim.diagnostic.goto_next()
   M.open_df()
