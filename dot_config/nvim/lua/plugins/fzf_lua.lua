@@ -21,6 +21,8 @@ return {
     winopts = {
       preview = {
         default = "builtin",
+        layout = "horizontal",
+        horizontal = "right:60%",
       },
     },
   },
@@ -40,7 +42,7 @@ return {
       fzf.files({ cwd = vim.fn.stdpath("config") })
     end)
     map({"n"}, leader("fF"), function() fzf.files() end)
-    map({"n"}, leader("lg"), function() fzf.live_grep() end)
+    map({"n"}, leader("g"), function() fzf.live_grep() end)
     vim.api.nvim_create_autocmd("VimEnter", {
       callback = function()
         local argc = vim.fn.argc()
