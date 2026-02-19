@@ -39,6 +39,7 @@ vim.diagnostic.config({
 })
 
 -- io
+opt.autoread = true
 opt.undofile = true
 opt.updatetime = 250
 opt.timeoutlen = 500

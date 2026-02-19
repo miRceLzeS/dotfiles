@@ -16,23 +16,32 @@ end
 
 M.map({ "n" }, "<Esc>", "<Cmd>nohlsearch<CR>")
 
+-- reload buffer
+local function checktime()
+  local name = vim.api.nvim_buf_get_name(0)
+  if name == "" then return end
+  vim.cmd("checktime " .. vim.fn.fnameescape(name))
+end
+M.map({ "n" }, "<M-r>", checktime)
+M.map({ "n" }, "<M-R>", vim.cmd("checktime"))
+
 -- U for redo
 M.unmap({ "n" }, "U")
 M.map({ "n" }, "U", "<C-r>")
 
 -- smart up and down movement
-function M.smart_up()
+local function smart_up()
   return vim.v.count == 0 and "gj" or "j"
 end
 
-function M.smart_down()
+local function smart_down()
   return vim.v.count == 0 and "gk" or "k"
 end
 
-M.map({ "n" }, "j", M.smart_up, { expr = true })
-M.map({ "n" }, "k", M.smart_down, { expr = true })
-M.map({ "n" }, "<Up>", M.smart_up, { expr = true })
-M.map({ "n" }, "<Down>", M.smart_down, { expr = true })
+M.map({ "n" }, "j", smart_up, { expr = true })
+M.map({ "n" }, "k", smart_down, { expr = true })
+M.map({ "n" }, "<Up>", smart_up, { expr = true })
+M.map({ "n" }, "<Down>", smart_down, { expr = true })
 
 -- toggle wrap
 M.map({ "n", "v", "i" }, "<M-w>", function()
