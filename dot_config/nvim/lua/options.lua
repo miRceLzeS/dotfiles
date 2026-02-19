@@ -9,6 +9,7 @@ opt.listchars = { tab = "⇥ ", trail = "·", nbsp = "␣" }
 opt.inccommand = "split"
 opt.showmode = false
 opt.ruler = false
+opt.winborder = "rounded"
 
 -- text editing
 opt.breakindent = true
@@ -28,7 +29,6 @@ opt.showbreak = "↪ "
 -- diagnostic
 vim.diagnostic.config({
   float = {
-    border = "rounded",
     focusable = false,
     scope = "cursor",
     source = "if_many",
@@ -43,9 +43,7 @@ opt.undofile = true
 opt.updatetime = 250
 opt.timeoutlen = 500
 opt.confirm = true
-vim.schedule(function()
-  opt.clipboard = "unnamedplus"
-end)
+opt.clipboard = "unnamedplus"
 
 -- misc
 opt.mouse = ""

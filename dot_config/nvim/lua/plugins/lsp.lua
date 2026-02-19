@@ -23,13 +23,18 @@ return {
           end
         end)
         local keymaps = require("keymaps")
-        local map = function(lhs, rhs)
+        local map = function(lhs, rhs, opts)
           local lhs_full = "<localleader>" .. lhs
-          keymaps.map("n", lhs_full, rhs, { buffer = args.buf })
+          local options = { buffer = args.buf }
+          if opts then
+            options = vim.tbl_extend("force", options, opts)
+          end
+          keymaps.map("n", lhs_full, rhs, options)
         end
         local unmap = function(lhs)
           keymaps.unmap("n", lhs, { buffer = args.buf })
         end
+        -- picker
         unmap("gd")
         unmap("gr")
         unmap("gD")
@@ -39,12 +44,16 @@ return {
         map("m", fzf.lsp_workspace_diagnostics)
         map("r", fzf.lsp_references)
         map("s", fzf.lsp_live_workspace_symbols)
+        -- inlay hint
         if client.supports_method("textDocument/inlayHint") then
           map("h", function()
             local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = args.buf })
             vim.lsp.inlay_hint.enable(not enabled, { bufnr = args.buf })
           end)
         end
+        -- hover
+        unmap("K")
+        map("k", function() vim.lsp.buf.hover() end)
       end,
     })
   end,

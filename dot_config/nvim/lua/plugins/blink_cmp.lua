@@ -64,7 +64,6 @@ return {
       ["<S-Tab>"] = { "select_prev", "fallback" },
       ["<C-d>"] = { "scroll_documentation_down", "fallback" },
       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-      ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
     },
     -- Default list of enabled providers defined so that you can extend it
     -- elsewhere in your config, without redefining it, due to `opts_extend`
