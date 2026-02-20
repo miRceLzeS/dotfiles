@@ -16,6 +16,7 @@ opt.breakindent = true
 opt.ignorecase = true
 opt.smartcase = true
 opt.scrolloff = 4
+opt.iskeyword:remove({ "_", "-" })
 
 opt.expandtab = true -- number of spaces will be inserted replacing a tab
 local tab_spaces = 2
