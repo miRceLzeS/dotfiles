@@ -2,5 +2,9 @@ return {
   "lukas-reineke/indent-blankline.nvim",
   event = vim.g.LazyFile,
   main = "ibl",
-  opts = {},
+  opts = {
+    indent = {
+      tab_char = "▎",
+    },
+  },
 }
