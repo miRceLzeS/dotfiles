@@ -5,7 +5,7 @@ opt.number = true
 opt.relativenumber = true
 opt.signcolumn = "yes"
 opt.list = true
-opt.listchars = { tab = "⇥ ", trail = "·", nbsp = "␣" }
+opt.listchars = { tab = "▎ ", trail = "·", nbsp = "␣" }
 opt.inccommand = "split"
 opt.showmode = false
 opt.ruler = false
