@@ -34,16 +34,19 @@ return {
         local unmap = function(lhs)
           keymaps.unmap("n", lhs, { buffer = args.buf })
         end
-        -- picker
+        -- occurrence
         unmap("gd")
         unmap("gr")
         unmap("gD")
         map("d", fzf.lsp_definitions)
         map("D", fzf.lsp_typedefs)
         map("i", fzf.lsp_implementations)
-        map("m", fzf.lsp_workspace_diagnostics)
         map("r", fzf.lsp_references)
-        map("s", fzf.lsp_live_workspace_symbols)
+        -- diagnostic
+        map("m", fzf.lsp_workspace_diagnostics)
+        -- symbol
+        map("s", fzf.lsp_document_symbols)
+        map("S", fzf.lsp_live_workspace_symbols)
         -- inlay hint
         if client.supports_method("textDocument/inlayHint") then
           map("h", function()
@@ -54,6 +57,8 @@ return {
         -- hover
         unmap("K")
         map("k", function() vim.lsp.buf.hover() end)
+        -- rename
+        map("c", function() vim.lsp.buf.rename() end)
       end,
     })
   end,
