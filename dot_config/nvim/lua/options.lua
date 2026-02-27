@@ -10,6 +10,7 @@ opt.inccommand = "split"
 opt.showmode = false
 opt.ruler = false
 opt.winborder = "rounded"
+opt.colorcolumn = "64"
 
 -- text editing
 opt.breakindent = true
