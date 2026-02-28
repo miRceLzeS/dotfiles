@@ -4,3 +4,5 @@ font-size = 20
 background-opacity = 0.8
 background-blur = 80
 macos-option-as-alt = left
+custom-shader = ~/.config/ghostty/shaders/cursor_rose_pine.glsl
+custom-shader = ~/.config/ghostty/shaders/cursor_smear_fade_original.glsl
