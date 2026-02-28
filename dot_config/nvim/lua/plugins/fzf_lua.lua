@@ -32,6 +32,13 @@ return {
     hls = {
       preview_normal = "Normal",
     },
+    keymap = {
+      fzf = {
+        ["tab"] = "down",
+        ["btab"] = "up",
+        ["alt-space"] = "toggle",
+      },
+    },
     previewers = {
       builtin = {
         syntax = true,
@@ -53,6 +60,7 @@ return {
   },
   config = function(_, opts)
     local fzf = require("fzf-lua")
+    fzf.register_ui_select()
     fzf.setup(opts)
     local map = require("keymaps").map
     local function leader(s)
