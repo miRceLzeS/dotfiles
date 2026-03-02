@@ -4,5 +4,6 @@ font-size = 20
 background-opacity = 0.8
 background-blur = true
 macos-option-as-alt = left
+shell-integration-features = ssh-terminfo,ssh-env
 custom-shader = ~/.config/ghostty/shaders/cursor_rose_pine.glsl
 custom-shader = ~/.config/ghostty/shaders/cursor_smear_fade_original.glsl
