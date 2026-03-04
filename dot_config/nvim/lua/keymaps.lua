@@ -1,6 +1,4 @@
-local M = {
-  df_winid = nil
-}
+local M = {}
 
 function M.map(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
@@ -14,81 +12,23 @@ function M.unmap(mode, lhs, opts)
   M.map(mode, lhs, "<Nop>", opts)
 end
 
+-- key bindings
+
 M.map({ "n" }, "<Esc>", "<Cmd>nohlsearch<CR>")
 
--- reload buffer
-local function checktime()
-  local name = vim.api.nvim_buf_get_name(0)
-  if name == "" then return end
-  vim.cmd("checktime " .. vim.fn.fnameescape(name))
-end
-M.map({ "n" }, "<M-r>", checktime)
-M.map({ "n" }, "<M-R>", vim.cmd("checktime"))
-
--- U for redo
-M.unmap({ "n" }, "U")
-M.map({ "n" }, "U", "<C-r>")
-
--- smart up and down movement
-local function smart_up()
-  return vim.v.count == 0 and "gj" or "j"
-end
-
-local function smart_down()
-  return vim.v.count == 0 and "gk" or "k"
-end
-
-M.map({ "n" }, "j", smart_up, { expr = true })
-M.map({ "n" }, "k", smart_down, { expr = true })
-M.map({ "n" }, "<Up>", smart_up, { expr = true })
-M.map({ "n" }, "<Down>", smart_down, { expr = true })
-
--- toggle wrap
 M.map({ "n", "v", "i" }, "<M-w>", function()
-  vim.opt.wrap = not vim.opt.wrap:get()
+  local opt = require("options").opt
+  opt.wrap = not opt.wrap:get()
 end)
 
--- true - close float window
--- false - error or untouch
-function M.close_df()
-  if M.df_winid and vim.api.nvim_win_is_valid(M.df_winid) then
-    local ok, err = pcall(vim.api.nvim_win_close, M.df_winid, true)
-    if not ok then
-      vim.notify(err)
-    end
-    return ok
-  end
-  return false
-end
+M.map({ "n", "v" }, "<leader>l", "<C-w>h", { desc = "Goto window left" })
+M.map({ "n", "v" }, "<leader>r", "<C-w>l", { desc = "Goto window right" })
+M.map({ "n", "v" }, "<leader>u", "<C-w>k", { desc = "Goto window up" })
+M.map({ "n", "v" }, "<leader>d", "<C-w>j", { desc = "Goto window down" })
 
-function M.open_df()
-  local function open_float()
-    local _, winid = vim.diagnostic.open_float()
-    M.df_winid = winid
-  end
-  vim.schedule(open_float)
-end
-
-M.unmap({ "n" }, "<C-w>d")
--- toggle diagnostic float window
-M.map({ "n" }, "<M-d>f", function()
-  local toggle = M.close_df()
-  if toggle then
-    return
-  end
-  M.open_df()
-end)
--- goto previous diagnostic
-M.map({ "n" }, "[d", function()
-  M.close_df()
-  vim.diagnostic.goto_prev()
-  M.open_df()
-end)
--- goto next diagnostic
-M.map({ "n" }, "]d", function()
-  M.close_df()
-  vim.diagnostic.goto_next()
-  M.open_df()
-end)
+M.map({ "n", "v" }, "<leader>wl", "<Cmd>leftabove vsplit<CR>", { desc = "vsplit left" })
+M.map({ "n", "v" }, "<leader>wr", "<Cmd>rightbelow vsplit<CR>", { desc = "vsplit right" })
+M.map({ "n", "v" }, "<leader>wu", "<Cmd>aboveleft split<CR>", { desc = "split up" })
+M.map({ "n", "v" }, "<leader>wd", "<Cmd>botright split<CR>", { desc = "split down" })
 
 return M

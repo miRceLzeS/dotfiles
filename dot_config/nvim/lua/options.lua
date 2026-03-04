@@ -1,53 +1,42 @@
-local opt = vim.opt
+local M = {}
+M.opt = vim.opt
 
 -- ui
-opt.number = true
-opt.relativenumber = true
-opt.signcolumn = "yes"
-opt.list = true
-opt.listchars = { tab = "▎ ", trail = "·", nbsp = "␣" }
-opt.inccommand = "split"
-opt.showmode = false
-opt.ruler = false
-opt.winborder = "rounded"
-opt.colorcolumn = "64"
+M.opt.number = true
+M.opt.relativenumber = true
+M.opt.signcolumn = "yes"
+M.opt.list = true
+M.opt.listchars = { tab = "▎ ", trail = "·", nbsp = "␣" }
+M.opt.inccommand = "split"
+M.opt.showmode = false
+M.opt.winborder = "rounded"
+M.opt.colorcolumn = "64"
 
 -- text editing
-opt.breakindent = true
-opt.ignorecase = true
-opt.smartcase = true
-opt.scrolloff = 4
-opt.iskeyword:remove({ "_", "-" })
+M.opt.breakindent = true
+M.opt.ignorecase = true
+M.opt.smartcase = true
+M.opt.scrolloff = 4
+M.opt.iskeyword:remove({ "_", "-" })
 
-opt.expandtab = true -- number of spaces will be inserted replacing a tab
+M.opt.expandtab = true -- number of spaces will be inserted replacing a tab
 local tab_spaces = 2
-opt.tabstop = tab_spaces -- number of visual spaces of a tab
-opt.shiftwidth = tab_spaces -- number of spaces when auto indent
-opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
-opt.linebreak = true
-opt.breakindent = true
-opt.showbreak = "↪ "
-
--- diagnostic
-vim.diagnostic.config({
-  float = {
-    focusable = false,
-    scope = "cursor",
-    source = "if_many",
-  },
-  severity_sort = true,
-  update_in_insert = false,
-  virtual_text = false,
-})
+M.opt.tabstop = tab_spaces -- number of visual spaces of a tab
+M.opt.shiftwidth = tab_spaces -- number of spaces when auto indent
+M.opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
+M.opt.linebreak = true
+M.opt.breakindent = true
+M.opt.showbreak = "↪ "
 
 -- io
-opt.autoread = true
-opt.undofile = true
-opt.updatetime = 250
-opt.timeoutlen = 500
-opt.confirm = true
-opt.clipboard = "unnamedplus"
+M.opt.autoread = true
+M.opt.undofile = true
+M.opt.updatetime = 250
+M.opt.timeoutlen = 500
+M.opt.confirm = true
+M.opt.clipboard = "unnamedplus"
 
 -- misc
-opt.mouse = ""
+M.opt.mouse = ""
 
+return M
