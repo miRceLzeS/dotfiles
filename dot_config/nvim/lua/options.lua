@@ -2,6 +2,7 @@ local M = {}
 M.opt = vim.opt
 
 -- ui
+M.opt.termguicolors = true
 M.opt.number = true
 M.opt.relativenumber = true
 M.opt.signcolumn = "yes"
