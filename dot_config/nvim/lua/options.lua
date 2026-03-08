@@ -11,6 +11,7 @@ opt.showmode = false
 opt.ruler = false
 opt.winborder = "rounded"
 opt.colorcolumn = "64"
+opt.shortmess:append("I")
 
 -- text editing
 opt.breakindent = true

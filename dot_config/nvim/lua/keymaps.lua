@@ -26,20 +26,19 @@ M.map({ "n" }, "<M-r>", checktime)
 M.map({ "n" }, "<M-R>", vim.cmd("checktime"))
 
 -- U for redo
-M.unmap({ "n" }, "U")
 M.map({ "n" }, "U", "<C-r>")
 
 -- smart up and down movement
 local function smart_up()
-  return vim.v.count == 0 and "gj" or "j"
-end
-
-local function smart_down()
   return vim.v.count == 0 and "gk" or "k"
 end
 
-M.map({ "n" }, "j", smart_up, { expr = true })
-M.map({ "n" }, "k", smart_down, { expr = true })
+local function smart_down()
+  return vim.v.count == 0 and "gj" or "j"
+end
+
+M.map({ "n" }, "k", smart_up, { expr = true })
+M.map({ "n" }, "j", smart_down, { expr = true })
 M.map({ "n" }, "<Up>", smart_up, { expr = true })
 M.map({ "n" }, "<Down>", smart_down, { expr = true })
 
