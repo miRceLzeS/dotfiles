@@ -19,7 +19,6 @@ return {
   opts_extend = { "ensure_installed" },
   config = function(_, opts)
     local TS = require("nvim-treesitter")
-    TS.setup(opts)
     TS.install(opts.ensure_installed)
     vim.api.nvim_create_autocmd("FileType", {
       callback = function(args)

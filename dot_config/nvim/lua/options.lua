@@ -47,7 +47,7 @@ opt.undofile = true
 opt.updatetime = 250
 opt.timeoutlen = 500
 opt.confirm = true
-opt.clipboard = "unnamedplus"
+opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 
 -- misc
 opt.mouse = ""

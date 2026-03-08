@@ -15,7 +15,6 @@ return {
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         if client and client.server_capabilities.semanticTokensProvider then
           client.server_capabilities.semanticTokensProvider = nil
-          client.server_capabilities.documentHighlightProvider = false
         end
         pcall(function()
           if vim.lsp.semantic_tokens and vim.lsp.semantic_tokens.stop then

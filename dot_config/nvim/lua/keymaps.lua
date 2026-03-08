@@ -16,15 +16,6 @@ end
 
 M.map({ "n" }, "<Esc>", "<Cmd>nohlsearch<CR>")
 
--- reload buffer
-local function checktime()
-  local name = vim.api.nvim_buf_get_name(0)
-  if name == "" then return end
-  vim.cmd("checktime " .. vim.fn.fnameescape(name))
-end
-M.map({ "n" }, "<M-r>", checktime)
-M.map({ "n" }, "<M-R>", vim.cmd("checktime"))
-
 -- U for redo
 M.map({ "n" }, "U", "<C-r>")
 
@@ -41,6 +32,9 @@ M.map({ "n" }, "k", smart_up, { expr = true })
 M.map({ "n" }, "j", smart_down, { expr = true })
 M.map({ "n" }, "<Up>", smart_up, { expr = true })
 M.map({ "n" }, "<Down>", smart_down, { expr = true })
+
+M.map({ "n" }, "<C-u>", "<C-u>zz")
+M.map({ "n" }, "<C-d>", "<C-d>zz")
 
 -- toggle wrap
 M.map({ "n", "v", "i" }, "<M-w>", function()
