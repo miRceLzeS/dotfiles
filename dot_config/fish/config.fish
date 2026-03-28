@@ -1,4 +1,51 @@
 if status is-interactive
-  # Commands to run in interactive sessions can go here
-  starship init fish | source
+    fish_vi_key_bindings
+    # Commands to run in interactive sessions can go here
+    if command -q starship
+        starship init fish | source
+    end
+    if command -q zoxide
+        zoxide init --cmd cd fish | source
+    end
+end
+
+# [INFO] global variables
+
+if command -q nvim
+    set -gx EDITOR nvim
+end
+
+# [INFO] alias
+
+if command -q nvim
+    function nv --wraps nvim
+        command nvim $argv
+    end
+end
+
+if command -q lsd
+    function ls --wraps lsd
+        command lsd $argv
+    end
+
+    function la --wraps "lsd -Al"
+        command lsd -Al $argv
+    end
+
+    function ltr --wraps "lsd --tree"
+        command lsd --tree $argv
+    end
+end
+
+if command -q lazygit
+    function lg --wraps lazygit
+        command lazygit $argv
+    end
+end
+
+# [INFO] macos
+if test (uname) = Darwin
+    if type -q brew
+        fish_add_path -m (brew --prefix)/bin
+    end
 end
