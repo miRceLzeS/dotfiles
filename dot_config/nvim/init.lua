@@ -192,30 +192,24 @@ map({ "n", "x" }, "<Leader>fn", "<Cmd>enew<CR>", { desc = "Create new file" })
 local pack = vim.pack
 local gh = function(name) return "https://github.com/" .. name end
 local setup = function(name, opts) require(name).setup(opts or {}) end
+local autocmd = vim.api.nvim_create_autocmd
 
 -- color scheme
-pack.add({ { src = gh("rose-pine/neovim"), name = "rose-pine" } })
+pack.add({
+  { src = gh("rose-pine/neovim"), name = "rose-pine" },
+}, { load = true })
 setup("rose-pine", { styles = { transparency = true } })
 vim.cmd("colorscheme rose-pine")
 
 -- icon
-pack.add({ gh("nvim-tree/nvim-web-devicons") })
+pack.add({ gh("nvim-tree/nvim-web-devicons") }, { laod = true })
 setup("nvim-web-devicons")
 
 -- status line
 pack.add({ gh("nvim-lualine/lualine.nvim") })
 setup("lualine", { options = { theme = "rose-pine" } })
 
-pack.add({
-  gh("nvim-mini/mini.pairs"),
-  gh("nvim-mini/mini.surround"),
-})
-setup("mini.pairs")
-setup("mini.surround", {
-  n_lines = 32,
-})
-
-pack.add({ gh("stevearc/oil.nvim") })
+pack.add({ gh("stevearc/oil.nvim") }, { load = true })
 setup("oil", {
   use_default_keymaps = false,
   keymaps = {
@@ -232,9 +226,35 @@ setup("oil", {
 })
 map("n", "<Leader>o", "<Cmd>Oil<CR>")
 
+-- completion
+autocmd({ "CmdlineEnter", "InsertEnter" }, {
+  once = true,
+  callback = function()
+    pack.add({
+      {
+        src = gh("saghen/blink.cmp"),
+        version = vim.version.range("1.*"),
+      },
+    })
+    setup("blink.cmp")
+  end,
+})
+
 -- lsp
 local lsp = vim.lsp
 local installed = { "lua_ls", "gopls" }
 pack.add({ gh("neovim/nvim-lspconfig") })
 lsp.enable(installed)
+
+autocmd({ "CmdlineEnter", "InsertEnter" }, {
+  once = true,
+  callback = function()
+    pack.add({
+      gh("nvim-mini/mini.pairs"),
+      gh("nvim-mini/mini.surround"),
+    })
+    setup("mini.pairs", { modes = { command = true } })
+    setup("mini.surround", { n_lines = 32 })
+  end,
+})
 
