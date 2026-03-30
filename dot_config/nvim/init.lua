@@ -122,7 +122,7 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result
 
 map("n", "U", "<C-r>")
 
-map({ "n", "x" }, "gh", "0")
+map({ "n", "x" }, "gh", "^")
 map({ "n", "x" }, "gl", "$")
 
 map("n", "<M-u>", "<Cmd>m .-2<CR>==", { desc = "Move current line up" })
@@ -187,3 +187,54 @@ map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>", { desc = "Close other ta
 
 -- file
 map({ "n", "x" }, "<Leader>fn", "<Cmd>enew<CR>", { desc = "Create new file" })
+
+-- [INFO] plugin
+local pack = vim.pack
+local gh = function(name) return "https://github.com/" .. name end
+local setup = function(name, opts) require(name).setup(opts or {}) end
+
+-- color scheme
+pack.add({ { src = gh("rose-pine/neovim"), name = "rose-pine" } })
+setup("rose-pine", { styles = { transparency = true } })
+vim.cmd("colorscheme rose-pine")
+
+-- icon
+pack.add({ gh("nvim-tree/nvim-web-devicons") })
+setup("nvim-web-devicons")
+
+-- status line
+pack.add({ gh("nvim-lualine/lualine.nvim") })
+setup("lualine", { options = { theme = "rose-pine" } })
+
+pack.add({
+  gh("nvim-mini/mini.pairs"),
+  gh("nvim-mini/mini.surround"),
+})
+setup("mini.pairs")
+setup("mini.surround", {
+  n_lines = 32,
+})
+
+pack.add({ gh("stevearc/oil.nvim") })
+setup("oil", {
+  use_default_keymaps = false,
+  keymaps = {
+    ["H"] = { "actions.parent", mode = "n" },
+    ["L"] = "actions.select",
+    ["<CR>"] = "actions.select",
+    ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
+    ["<Leader>oq"] = { "actions.close", mode = "n" },
+    ["<Leader>or"] = { "actions.refresh", mode = "n" },
+  },
+  view_options = {
+    show_hidden = true,
+  },
+})
+map("n", "<Leader>o", "<Cmd>Oil<CR>")
+
+-- lsp
+local lsp = vim.lsp
+local installed = { "lua_ls", "gopls" }
+pack.add({ gh("neovim/nvim-lspconfig") })
+lsp.enable(installed)
+

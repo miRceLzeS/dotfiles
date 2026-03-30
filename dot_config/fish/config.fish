@@ -7,6 +7,9 @@ if status is-interactive
     if command -q zoxide
         zoxide init --cmd cd fish | source
     end
+    if command -q fzf
+        fzf --fish | source
+    end
 end
 
 # [INFO] global variables
@@ -40,6 +43,12 @@ end
 if command -q lazygit
     function lg --wraps lazygit
         command lazygit $argv
+    end
+end
+
+if command -q zellij
+    function zj --wraps zellij
+        command zellij $argv
     end
 end
 
