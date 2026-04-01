@@ -5,4 +5,5 @@ background-opacity = 0.8
 background-blur = true
 macos-option-as-alt = left
 shell-integration-features = ssh-terminfo,ssh-env
+window-decoration = false
 # config-file = ?shader.conf

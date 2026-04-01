@@ -122,8 +122,8 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result
 
 map("n", "U", "<C-r>")
 
-map({ "n", "x" }, "gh", "^")
-map({ "n", "x" }, "gl", "$")
+map({ "n", "x", "o" }, "gh", "^")
+map({ "n", "x", "o" }, "gl", "$")
 
 map("n", "<M-u>", "<Cmd>m .-2<CR>==", { desc = "Move current line up" })
 map("n", "<M-d>", "<Cmd>m .+1<CR>==", { desc = "Move current line down" })
