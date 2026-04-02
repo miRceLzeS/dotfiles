@@ -8,7 +8,7 @@ To begin with, make sure the network is ready.
 
 ## macos
 
-### mac cli toolkit
+### cli toolkit
 
 ```sh
 xcode-select --install
@@ -40,23 +40,34 @@ brew install fzf fd ripgrep neovim zellij zoxide starship lsd lazygit
 # rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # restart shell
+
+# lsp
 rustup component add rust-analyzer
 ```
 
 ```sh
 # go
 # install via official installer
+
 fish_add (go env GOPATH)/bin
+# lsp
+go install golang.org/x/tools/gopls@latest
+
+# debugger
+go install github.com/go-delve/delve/cmd/dlv@latest
 ```
 
-```
+```sh
 # lua
+
+# lsp
 brew install lua-language-server
 ```
 
 ### neovim
 
 ```sh
+# nvim-treesitter
 cargo install --locked tree-sitter-cli
 ```
 
