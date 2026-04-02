@@ -230,31 +230,82 @@ map("n", "<Leader>o", "<Cmd>Oil<CR>")
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
   once = true,
   callback = function()
-    pack.add({
-      {
-        src = gh("saghen/blink.cmp"),
-        version = vim.version.range("1.*"),
+    setup("blink.cmp", {
+      completion = {
+        documentation = {
+          auto_show = true,
+        },
+        list = {
+          selection = {
+            preselect = false,
+            auto_insert = true,
+          }
+        },
       },
+      keymap = {
+        preset = "none",
+        ["<CR>"] = { "accept", "fallback" },
+        ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+        ["<S-Tab>"] = { "select_prev",  "snippet_backward", "fallback" },
+        ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+        ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+      },
+      signature = { enabled = true },
     })
-    setup("blink.cmp")
   end,
 })
+pack.add({
+  {
+    src = gh("saghen/blink.cmp"),
+    version = vim.version.range("1.*"),
+  },
+})
+
+-- treesitter
+local ensured_installed = { "rust", "go", "lua" }
+
+autocmd({ "PackChanged" }, {
+  once = true,
+  callback = function(ev)
+    local name, kind = ev.data.spec.name, ev.data.kind
+    if name == "nvim-treesitter" and kind == "update" then
+      if not ev.data.active then vim.cmd.packadd("nvim-treesitter") end
+      vim.cmd("TSUpdate")
+    end
+  end,
+})
+autocmd({ "FileType" }, {
+  pattern = "*",
+  callback = function(ev)
+    pcall(vim.treesitter.start, ev.buf)
+  end,
+})
+pack.add({
+  {
+    src = gh("nvim-treesitter/nvim-treesitter"),
+    version = "main",
+  },
+})
+require("nvim-treesitter").install(ensured_installed)
 
 -- lsp
 local lsp = vim.lsp
-local installed = { "lua_ls", "gopls" }
+local installed = { "lua_ls", "gopls", "rust_analyzer" }
 pack.add({ gh("neovim/nvim-lspconfig") })
 lsp.enable(installed)
 
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
   once = true,
   callback = function()
-    pack.add({
-      gh("nvim-mini/mini.pairs"),
-      gh("nvim-mini/mini.surround"),
-    })
     setup("mini.pairs", { modes = { command = true } })
     setup("mini.surround", { n_lines = 32 })
   end,
 })
+pack.add({
+  gh("nvim-mini/mini.pairs"),
+  gh("nvim-mini/mini.surround"),
+})
 
+-- picker
+pack.add({ gh("ibhagwan/fzf-lua") })
+setup("fzf-lua")
