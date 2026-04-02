@@ -1,0 +1,39 @@
+layout {
+  cwd "."
+
+  default_tab_template {
+    pane size=1 borderless=true {
+      plugin location="zellij:tab-bar"
+    }
+    children
+    pane size=2 borderless=true {
+      plugin location="zellij:status-bar"
+    }
+  }
+
+  tab name="plan" split_direction="vertical" {
+    pane name="plan.agent" command="opencode"
+    pane size="64%" split_direction="horizontal" {
+      pane size="64%" name="plan.doc"
+      pane split_direction="vertical" {
+        pane
+        pane name="plan.TODO"
+      }
+    }
+  }
+
+  tab name="code" split_direction="vertical" {
+    pane split_direction="vertical" {
+      pane size="24%" name="code.nav"
+      pane split_direction="horizontal" {
+        pane size="64%" name="code.main" focus=true command="nvim" {
+          args "."
+        }
+        pane split_direction="vertical" {
+          pane name="code.task"
+          pane name="code.feedback"
+        }
+      }
+    }
+  }
+}

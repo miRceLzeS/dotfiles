@@ -1,14 +1,27 @@
 if status is-interactive
-    fish_vi_key_bindings
     # Commands to run in interactive sessions can go here
+
+    set -g fish_greeting
+
+    fish_vi_key_bindings
+
     if command -q starship
         starship init fish | source
     end
+
     if command -q zoxide
         zoxide init --cmd cd fish | source
     end
+
     if command -q fzf
         fzf --fish | source
+    end
+end
+
+# [INFO] macos
+if test (uname) = Darwin
+    if type -q brew
+        fish_add_path -m (brew --prefix)/bin
     end
 end
 
@@ -52,9 +65,3 @@ if command -q zellij
     end
 end
 
-# [INFO] macos
-if test (uname) = Darwin
-    if type -q brew
-        fish_add_path -m (brew --prefix)/bin
-    end
-end
