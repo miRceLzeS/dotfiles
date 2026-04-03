@@ -1,0 +1,28 @@
+theme = "rose_pine_transparent"
+
+[editor]
+line-number = "relative"
+scrolloff = 4
+mouse = true
+middle-click-paste = false
+continue-comments = false
+completion-timeout = 5
+completion-replace = true
+rulers = [64]
+popup-border = "all"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "block"
+
+[editor.whitespace.render]
+space = "none"
+tab = "none"
+newline = "none"
+
+[keys.normal]
+"esc" = "collapse_selection"
+
+[keys.select]
+"esc" = ["collapse_selection", "normal_mode"]
