@@ -32,15 +32,15 @@ opt.splitright = true
 
 -- wrap
 opt.wrap = false
-opt.linebreak = true -- line will break at suitable character if true
+opt.linebreak = true   -- line will break at suitable character if true
 opt.breakindent = true -- the new visual line will be indented
 opt.showbreak = "≪ "
 
 -- indent
-opt.expandtab = true -- number of spaces will be inserted replacing a tab
+opt.expandtab = true         -- number of spaces will be inserted replacing a tab
 local tab_spaces = 2
-opt.tabstop = tab_spaces -- number of visual spaces of a tab
-opt.shiftwidth = tab_spaces -- number of spaces when auto indent
+opt.tabstop = tab_spaces     -- number of visual spaces of a tab
+opt.shiftwidth = tab_spaces  -- number of spaces when auto indent
 opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
 
 -- search: ignore case unless upper case character is typed
@@ -88,7 +88,8 @@ function op_motion_expr(op, motion)
     return string.format("aboveleft %s", op)
   elseif motion == "j" then
     return string.format("%s", op)
-  else return ""
+  else
+    return ""
   end
 end
 
@@ -122,7 +123,7 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result
 
 map("n", "U", "<C-r>")
 
-map({ "n", "x", "o" }, "gh", "^")
+map({ "n", "x", "o" }, "gh", "0")
 map({ "n", "x", "o" }, "gl", "$")
 
 map("n", "<M-u>", "<Cmd>m .-2<CR>==", { desc = "Move current line up" })
@@ -200,6 +201,7 @@ pack.add({
 }, { load = true })
 setup("rose-pine", { styles = { transparency = true } })
 vim.cmd("colorscheme rose-pine")
+local palette = require("rose-pine.palette")
 
 -- icon
 pack.add({ gh("nvim-tree/nvim-web-devicons") }, { laod = true })
@@ -207,7 +209,23 @@ setup("nvim-web-devicons")
 
 -- status line
 pack.add({ gh("nvim-lualine/lualine.nvim") })
-setup("lualine", { options = { theme = "rose-pine" } })
+local theme = require("lualine.themes.rose-pine")
+theme.normal = {
+  a = { bg = palette.rose, fg = palette.base, gui = "bold" },
+  b = { bg = palette.overlay, fg = palette.rose },
+  c = { bg = palette.surface, fg = palette.text },
+}
+theme.visual = {
+  a = { bg = palette.iris, fg = palette.base, gui = "bold" },
+  b = { bg = palette.overlay, fg = palette.foam },
+  c = { bg = palette.surface, fg = palette.text },
+}
+theme.terminal = {
+  a = { bg = palette.foam, fg = palette.base, gui = "bold" },
+  b = { bg = palette.overlay, fg = palette.foam },
+  c = { bg = palette.surface, fg = palette.text },
+}
+setup("lualine", { options = { theme = theme } })
 
 pack.add({ gh("stevearc/oil.nvim") }, { load = true })
 setup("oil", {
@@ -246,7 +264,7 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
         preset = "none",
         ["<CR>"] = { "accept", "fallback" },
         ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-        ["<S-Tab>"] = { "select_prev",  "snippet_backward", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
         ["<C-u>"] = { "scroll_documentation_up", "fallback" },
         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
       },
@@ -304,6 +322,14 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
 pack.add({
   gh("nvim-mini/mini.pairs"),
   gh("nvim-mini/mini.surround"),
+})
+
+-- conform
+pack.add({ gh("stevearc/conform.nvim") })
+setup("conform", {
+  format_after_save = {
+    lsp_format = "fallback",
+  },
 })
 
 -- picker
