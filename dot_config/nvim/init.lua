@@ -197,11 +197,10 @@ local autocmd = vim.api.nvim_create_autocmd
 
 -- color scheme
 pack.add({
-  { src = gh("rose-pine/neovim"), name = "rose-pine" },
+  { src = gh("miRceLzeS/daibanana.nvim"), name = "daibanana" },
 }, { load = true })
-setup("rose-pine", { styles = { transparency = true } })
-vim.cmd("colorscheme rose-pine")
-local palette = require("rose-pine.palette")
+setup("daibanana")
+vim.cmd("colorscheme daibanana")
 
 -- icon
 pack.add({ gh("nvim-tree/nvim-web-devicons") }, { laod = true })
@@ -209,23 +208,7 @@ setup("nvim-web-devicons")
 
 -- status line
 pack.add({ gh("nvim-lualine/lualine.nvim") })
-local theme = require("lualine.themes.rose-pine")
-theme.normal = {
-  a = { bg = palette.rose, fg = palette.base, gui = "bold" },
-  b = { bg = palette.overlay, fg = palette.rose },
-  c = { bg = palette.surface, fg = palette.text },
-}
-theme.visual = {
-  a = { bg = palette.iris, fg = palette.base, gui = "bold" },
-  b = { bg = palette.overlay, fg = palette.foam },
-  c = { bg = palette.surface, fg = palette.text },
-}
-theme.terminal = {
-  a = { bg = palette.foam, fg = palette.base, gui = "bold" },
-  b = { bg = palette.overlay, fg = palette.foam },
-  c = { bg = palette.surface, fg = palette.text },
-}
-setup("lualine", { options = { theme = theme } })
+setup("lualine", { options = { theme = "daibanana" } })
 
 pack.add({ gh("stevearc/oil.nvim") }, { load = true })
 setup("oil", {
