@@ -32,8 +32,7 @@ opt.splitright = true
 
 -- wrap
 opt.wrap = false
-opt.linebreak = true   -- line will break at suitable character if true
-opt.breakindent = true -- the new visual line will be indented
+opt.linebreak = true -- line will break at suitable character if true opt.breakindent = true -- the new visual line will be indented
 opt.showbreak = "≪ "
 
 -- indent
@@ -199,7 +198,7 @@ local autocmd = vim.api.nvim_create_autocmd
 pack.add({
   { src = gh("miRceLzeS/daibanana.nvim"), name = "daibanana" },
 }, { load = true })
-setup("daibanana")
+setup("daibanana", { transparent = true })
 vim.cmd("colorscheme daibanana")
 
 -- icon
