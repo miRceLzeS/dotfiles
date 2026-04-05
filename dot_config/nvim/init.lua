@@ -202,7 +202,7 @@ setup("daibanana", { transparent = true })
 vim.cmd("colorscheme daibanana")
 
 -- icon
-pack.add({ gh("nvim-tree/nvim-web-devicons") }, { laod = true })
+pack.add({ gh("nvim-tree/nvim-web-devicons") }, { load = true })
 setup("nvim-web-devicons")
 
 -- status line
