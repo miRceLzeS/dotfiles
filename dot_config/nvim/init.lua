@@ -185,9 +185,6 @@ map({ "n", "x" }, "<Leader><Tab>n", "<Cmd>tabnew<CR>")
 
 map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>", { desc = "Close other tabs" })
 
--- file
-map({ "n", "x" }, "<Leader>fn", "<Cmd>enew<CR>", { desc = "Create new file" })
-
 -- [INFO] plugin
 local pack = vim.pack
 local gh = function(name) return "https://github.com/" .. name end
