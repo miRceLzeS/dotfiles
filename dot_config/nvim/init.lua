@@ -5,9 +5,7 @@ G.mapleader = " "
 G.maplocalleader = "\\"
 
 -- [INFO] option
-local opt = vim.opt
-
--- visual effect
+local opt = vim.opt -- visual effect
 opt.colorcolumn = "64"
 opt.cursorline = true
 opt.inccommand = "split"
@@ -133,7 +131,6 @@ map("i", "<M-u>", "<Esc><Cmd>m .-2<CR>==gi", { desc = "Move current line up" })
 map("i", "<M-d>", "<Esc><Cmd>m .+1<CR>==gi", { desc = "Move current line down" })
 
 -- toggle
-
 map({ "n", "x" }, "<leader>tw", function()
   local wo = vim.wo
 
@@ -145,15 +142,11 @@ end, { desc = "toggle wrap" })
 map("x", "p", '"_dP')
 map("v", "<Leader>y", '"+y')
 
--- buffer
-map({ "n", "x" }, "<Leader>b[", "<Cmd>bprevious<CR>", { desc = "Goto prievous buffer" })
-map({ "n", "x" }, "<Leader>b]", "<Cmd>bnext<CR>", { desc = "Goto next buffer" })
-
 -- window
-map({ "n", "x" }, "<Leader>wh", "<C-w>h", { desc = "Goto window left" })
-map({ "n", "x" }, "<Leader>wl", "<C-w>l", { desc = "Goto window right" })
-map({ "n", "x" }, "<Leader>wk", "<C-w>k", { desc = "Goto window up" })
-map({ "n", "x" }, "<Leader>wj", "<C-w>j", { desc = "Goto window down" })
+map({ "n", "x" }, "<C-h>", "<C-w>h", { desc = "Goto window left" })
+map({ "n", "x" }, "<C-l>", "<C-w>l", { desc = "Goto window right" })
+map({ "n", "x" }, "<C-k>", "<C-w>k", { desc = "Goto window up" })
+map({ "n", "x" }, "<C-j>", "<C-w>j", { desc = "Goto window down" })
 
 map({ "n", "x" }, "<Leader>ws", function()
   local ok, key = pcall(vim.fn.getcharstr)
@@ -178,12 +171,15 @@ end, { desc = "Create new window at direction" })
 map({ "n", "x" }, "<Leader>wo", "<Cmd>only<CR>", { desc = "Close other windows" })
 
 -- tab
-map({ "n", "x" }, "<Leader><Tab>[", "<Cmd>tabprevious<CR>")
-map({ "n", "x" }, "<Leader><Tab>]", "<Cmd>tabnext<CR>")
+map({ "n", "x" }, "[<Tab>", "<Cmd>tabprevious<CR>")
+map({ "n", "x" }, "]<Tab>", "<Cmd>tabnext<CR>")
 
 map({ "n", "x" }, "<Leader><Tab>n", "<Cmd>tabnew<CR>")
 
 map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>", { desc = "Close other tabs" })
+
+-- plugin manager
+map({ "n" }, "<Leader>pu", "<Cmd>lua vim.pack.update()<CR>", { desc = "Update plugins" })
 
 -- [INFO] plugin
 local pack = vim.pack
@@ -289,6 +285,17 @@ require("nvim-treesitter").install(ensured_installed)
 local lsp = vim.lsp
 local installed = { "lua_ls", "gopls", "rust_analyzer" }
 pack.add({ gh("neovim/nvim-lspconfig") })
+
+-- go
+lsp.config("gopls", {
+  settings = {
+    gopls = {
+      semanticTokens = true,
+    },
+  },
+})
+
+-- enable lsp
 lsp.enable(installed)
 
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
@@ -313,4 +320,60 @@ setup("conform", {
 
 -- picker
 pack.add({ gh("ibhagwan/fzf-lua") })
-setup("fzf-lua")
+setup("fzf-lua", {
+  winopts  = {
+    width   = 0.8,
+    height  = 0.9,
+    preview = {
+      hidden       = false,
+      vertical     = "up:45%",
+      horizontal   = "right:50%",
+      layout       = "flex",
+      flip_columns = 64,
+      delay        = 10,
+      winopts      = { number = false },
+    },
+  },
+  keymap   = {
+    builtin = {
+      true,
+      ["<C-d>"] = "preview-page-down",
+      ["<C-u>"] = "preview-page-up",
+    },
+    fzf = {
+      true,
+      ["ctrl-d"] = "preview-page-down",
+      ["ctrl-u"] = "preview-page-up",
+      ["ctrl-q"] = "select-all+accept",
+    },
+  },
+  fzf_opts = {
+    ["--layout"] = "reverse-list",
+  },
+})
+
+function workspace_root()
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+    if client.config and client.config.root_dir and client.config.root_dir ~= "" then
+      return client.config.root_dir
+    end
+  end
+  return vim.fn.getcwd()
+end
+
+map({ "n", "x" }, "gr", "<Cmd>FzfLua lsp_references<CR>", { desc = "Goto references" })
+map({ "n", "x" }, "gd", "<Cmd>FzfLua lsp_definitions<CR>", { desc = "Goto definition" })
+map({ "n", "x" }, "gt", "<Cmd>FzfLua lsp_typedefs<CR>", { desc = "Goto type definition" })
+map({ "n", "x" }, "gi", "<Cmd>FzfLua lsp_implementations<CR>", { desc = "Goto implementations" })
+map({ "n", "x" }, "<Leader>b", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
+map({ "n", "x" }, "<Leader>f", "<Cmd>FzfLua files cwd=.<CR>", { desc = "Find files" })
+map({ "n", "x" }, "<Leader>F", function()
+  require("fzf-lua").files({ cwd = workspace_root() })
+end, { desc = "Find files" })
+map({ "n", "x" }, "<Leader>b", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
+map({ "n", "x" }, "<Leader>/", "<Cmd>FzfLua live_grep<CR>", { desc = "Live grep" })
+map({ "n", "x" }, "<Leader>s", "<Cmd>FzfLua lsp_document_symbols<CR>", { desc = "Buffer-wide symbols" })
+map({ "n", "x" }, "<Leader>S", "<Cmd>FzfLua lsp_workspace_symbols<CR>", { desc = "Workspace-wide symbols" })
+map({ "n", "x" }, "<Leader>c", "<Cmd>FzfLua lsp_code_actions<CR>", { desc = "Code actions" })
+map({ "n", "x" }, "<Leader>d", "<Cmd>FzfLua lsp_document_diagnostics<CR>", { desc = "Buffer-wide diagnostics" })
+map({ "n", "x" }, "<Leader>D", "<Cmd>FzfLua lsp_workspace_diagnostics<CR>", { desc = "Workspace-wide diagnostics" })
