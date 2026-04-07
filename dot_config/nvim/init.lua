@@ -74,6 +74,10 @@ function unmap(mode, lhs, opts)
   map(mode, lhs, "<Nop>", opts)
 end
 
+function delmap(mode, lhs, opts)
+  pcall(vim.keymap.del, mode, lhs, opts)
+end
+
 function op_motion_expr(op, motion)
   if not op then return "" end
 
@@ -148,7 +152,7 @@ map({ "n", "x" }, "<C-l>", "<C-w>l", { desc = "Goto window right" })
 map({ "n", "x" }, "<C-k>", "<C-w>k", { desc = "Goto window up" })
 map({ "n", "x" }, "<C-j>", "<C-w>j", { desc = "Goto window down" })
 
-map({ "n", "x" }, "<Leader>ws", function()
+map({ "n", "x" }, "<Leader>w", function()
   local ok, key = pcall(vim.fn.getcharstr)
   if not ok then return end
 
@@ -157,16 +161,6 @@ map({ "n", "x" }, "<Leader>ws", function()
 
   vim.cmd(expr)
 end, { desc = "Split window to direction" })
-
-map({ "n", "x" }, "<Leader>wn", function()
-  local ok, key = pcall(vim.fn.getcharstr)
-  if not ok then return end
-
-  local expr = op_motion_expr("new", key)
-  if expr == "" then return end
-
-  vim.cmd(expr)
-end, { desc = "Create new window at direction" })
 
 map({ "n", "x" }, "<Leader>wo", "<Cmd>only<CR>", { desc = "Close other windows" })
 
@@ -285,17 +279,6 @@ require("nvim-treesitter").install(ensured_installed)
 local lsp = vim.lsp
 local installed = { "lua_ls", "gopls", "rust_analyzer" }
 pack.add({ gh("neovim/nvim-lspconfig") })
-
--- go
-lsp.config("gopls", {
-  settings = {
-    gopls = {
-      semanticTokens = true,
-    },
-  },
-})
-
--- enable lsp
 lsp.enable(installed)
 
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
@@ -309,6 +292,15 @@ pack.add({
   gh("nvim-mini/mini.pairs"),
   gh("nvim-mini/mini.surround"),
 })
+
+delmap({ "n", "x" }, "gra")
+delmap({ "n", "x" }, "gri")
+delmap({ "n", "x" }, "grn")
+delmap({ "n", "x" }, "grr")
+delmap({ "n", "x" }, "grt")
+delmap({ "n", "x" }, "grx")
+delmap({ "n", "x" }, "g0")
+delmap({ "i" }, "<C-s>")
 
 -- conform
 pack.add({ gh("stevearc/conform.nvim") })
@@ -365,6 +357,7 @@ map({ "n", "x" }, "gr", "<Cmd>FzfLua lsp_references<CR>", { desc = "Goto referen
 map({ "n", "x" }, "gd", "<Cmd>FzfLua lsp_definitions<CR>", { desc = "Goto definition" })
 map({ "n", "x" }, "gt", "<Cmd>FzfLua lsp_typedefs<CR>", { desc = "Goto type definition" })
 map({ "n", "x" }, "gi", "<Cmd>FzfLua lsp_implementations<CR>", { desc = "Goto implementations" })
+map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
 map({ "n", "x" }, "<Leader>b", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
 map({ "n", "x" }, "<Leader>f", "<Cmd>FzfLua files cwd=.<CR>", { desc = "Find files" })
 map({ "n", "x" }, "<Leader>F", function()
