@@ -147,11 +147,6 @@ map("x", "p", '"_dP')
 map("v", "<Leader>y", '"+y')
 
 -- window
-map({ "n", "x" }, "<C-h>", "<C-w>h", { desc = "Goto window left" })
-map({ "n", "x" }, "<C-l>", "<C-w>l", { desc = "Goto window right" })
-map({ "n", "x" }, "<C-k>", "<C-w>k", { desc = "Goto window up" })
-map({ "n", "x" }, "<C-j>", "<C-w>j", { desc = "Goto window down" })
-
 map({ "n", "x" }, "<Leader>w", function()
   local ok, key = pcall(vim.fn.getcharstr)
   if not ok then return end
@@ -279,7 +274,6 @@ require("nvim-treesitter").install(ensured_installed)
 local lsp = vim.lsp
 local installed = { "lua_ls", "gopls", "rust_analyzer" }
 pack.add({ gh("neovim/nvim-lspconfig") })
-lsp.enable(installed)
 
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
   once = true,
@@ -287,10 +281,6 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
     setup("mini.pairs", { modes = { command = true } })
     setup("mini.surround", { n_lines = 32 })
   end,
-})
-pack.add({
-  gh("nvim-mini/mini.pairs"),
-  gh("nvim-mini/mini.surround"),
 })
 
 delmap({ "n", "x" }, "gra")
@@ -302,12 +292,29 @@ delmap({ "n", "x" }, "grx")
 delmap({ "n", "x" }, "g0")
 delmap({ "i" }, "<C-s>")
 
+-- go
+lsp.config("gopls", {
+  settings = {
+    gopls = {
+      semanticTokens = true,
+    },
+  },
+})
+
+lsp.enable(installed)
+
 -- conform
 pack.add({ gh("stevearc/conform.nvim") })
 setup("conform", {
   format_after_save = {
     lsp_format = "fallback",
   },
+})
+
+-- mini
+pack.add({
+  gh("nvim-mini/mini.pairs"),
+  gh("nvim-mini/mini.surround"),
 })
 
 -- picker
@@ -370,3 +377,11 @@ map({ "n", "x" }, "<Leader>S", "<Cmd>FzfLua lsp_workspace_symbols<CR>", { desc =
 map({ "n", "x" }, "<Leader>c", "<Cmd>FzfLua lsp_code_actions<CR>", { desc = "Code actions" })
 map({ "n", "x" }, "<Leader>d", "<Cmd>FzfLua lsp_document_diagnostics<CR>", { desc = "Buffer-wide diagnostics" })
 map({ "n", "x" }, "<Leader>D", "<Cmd>FzfLua lsp_workspace_diagnostics<CR>", { desc = "Workspace-wide diagnostics" })
+
+-- tmux
+pack.add({ gh("christoomey/vim-tmux-navigator") })
+
+map({ "n", "x" }, "<C-h>", "<Cmd>TmuxNavigateLeft<CR>", { desc = "Goto window left" })
+map({ "n", "x" }, "<C-l>", "<Cmd>TmuxNavigateRight<CR>", { desc = "Goto window right" })
+map({ "n", "x" }, "<C-k>", "<Cmd>TmuxNavigateUp<CR>", { desc = "Goto window up" })
+map({ "n", "x" }, "<C-j>", "<Cmd>TmuxNavigateDown<CR>", { desc = "Goto window down" })
