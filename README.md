@@ -14,6 +14,8 @@ To begin with, make sure the network is ready.
 xcode-select --install
 ```
 
+This contains necessary build tools and apple's C/C++ environments.
+
 ### homebrew
 
 ```sh
@@ -31,10 +33,12 @@ fish
 brew install chezmoi
 chezmoi init https://github.com/miRceLzeS/dotfiles.git
 chezmoi apply
-brew install fzf fd ripgrep neovim zellij zoxide starship lsd lazygit
+brew install fzf fd ripgrep neovim tmux zoxide starship lsd lazygit
 ```
 
 ### languages
+
+c/cpp are shipped with xcode-select
 
 ```sh
 # rust

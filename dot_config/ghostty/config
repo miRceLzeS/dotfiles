@@ -4,6 +4,7 @@ font-family = "Maple Mono NF CN"
 font-size = 20
 background-opacity = 1.0
 background-blur = false
+cursor-style-blink = false
 macos-option-as-alt = left
 shell-integration-features = ssh-terminfo,ssh-env
 window-decoration = false

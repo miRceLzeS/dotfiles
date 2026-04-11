@@ -214,6 +214,7 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
   callback = function()
     setup("blink.cmp", {
       completion = {
+        accept = { auto_brackets = { enabled = false }, },
         documentation = {
           auto_show = true,
         },
@@ -244,7 +245,7 @@ pack.add({
 })
 
 -- treesitter
-local ensured_installed = { "rust", "go", "lua" }
+local ensured_installed = { "c", "cpp", "rust", "go", "lua" }
 
 autocmd({ "PackChanged" }, {
   once = true,
@@ -272,7 +273,7 @@ require("nvim-treesitter").install(ensured_installed)
 
 -- lsp
 local lsp = vim.lsp
-local installed = { "lua_ls", "gopls", "rust_analyzer" }
+local installed = { "clangd", "rust_analyzer", "gopls", "lua_ls" }
 pack.add({ gh("neovim/nvim-lspconfig") })
 
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
