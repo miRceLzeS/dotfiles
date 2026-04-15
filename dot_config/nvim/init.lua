@@ -70,10 +70,6 @@ function map(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, options)
 end
 
-function unmap(mode, lhs, opts)
-  map(mode, lhs, "<Nop>", opts)
-end
-
 function delmap(mode, lhs, opts)
   pcall(vim.keymap.del, mode, lhs, opts)
 end
@@ -94,11 +90,13 @@ function op_motion_expr(op, motion)
   end
 end
 
--- unmap
+-- delmap
 
-unmap({ "n", "v" }, "s")
+delmap({ "n", "v" }, "s")
 
 -- enhance
+map("i", "kj", "<Esc>")
+map("i", "jk", "<Esc>")
 
 map("n", "<Esc>", "<Cmd>nohlsearch<CR>")
 
