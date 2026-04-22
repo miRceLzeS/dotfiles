@@ -256,29 +256,8 @@ pack.add({
 })
 
 -- treesitter
-local ensure_installed = { "c", "cpp", "rust", "go", "lua" }
-
---
---autocmd({ "PackChanged" }, {
---  once = true,
---  callback = function(ev)
---    local name, kind = ev.data.spec.name, ev.data.kind
---    if name == "nvim-treesitter" and kind == "update" then
---      if not ev.data.active then vim.cmd.packadd("nvim-treesitter") end
---      vim.cmd("TSUpdate")
---    end
---  end,
---})
-
---pack.add({
---  {
---    src = gh("nvim-treesitter/nvim-treesitter"),
---    version = "main",
---  },
---})
---require("nvim-treesitter").install(ensured_installed)
-
 pack.add({ gh("romus204/tree-sitter-manager.nvim") })
+local ensure_installed = { "c", "cpp", "rust", "go", "lua" }
 
 autocmd({ "FileType" }, {
   pattern = "*",
