@@ -257,7 +257,15 @@ pack.add({
 
 -- treesitter
 pack.add({ gh("romus204/tree-sitter-manager.nvim") })
-local ensure_installed = { "c", "cpp", "rust", "go", "lua" }
+local ensure_installed = {
+  "c",
+  "cpp",
+  "rust",
+  "go",
+  "lua",
+  "markdown",
+  "markdown_inline",
+}
 
 autocmd({ "FileType" }, {
   pattern = "*",
