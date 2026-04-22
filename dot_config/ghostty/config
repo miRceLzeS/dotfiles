@@ -1,5 +1,4 @@
-theme = daibanana
-# theme = Rose Pine
+theme = Rose Pine
 font-family = "Maple Mono NF CN"
 font-size = 20
 background-opacity = 1.0

@@ -33,7 +33,8 @@ fish
 brew install chezmoi
 chezmoi init https://github.com/miRceLzeS/dotfiles.git
 chezmoi apply
-brew install fzf fd ripgrep neovim tmux zoxide starship lsd lazygit
+brew install \
+fzf fd ripgrep neovim tmux zoxide starship lsd lazygit tmuxp
 ```
 
 ### languages

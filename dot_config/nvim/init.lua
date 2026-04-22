@@ -95,9 +95,6 @@ end
 delmap({ "n", "v" }, "s")
 
 -- enhance
-map("i", "kj", "<Esc>")
-map("i", "jk", "<Esc>")
-
 map("n", "<Esc>", "<Cmd>nohlsearch<CR>")
 
 map("x", "<", "<gv")
@@ -119,18 +116,19 @@ map("o", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result
 map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
 
 -- customize
+map("n", "U", "<C-r>", { desc = "Redo" })
 
-map("n", "U", "<C-r>")
-
-map({ "n", "x", "o" }, "gh", "0")
+map({ "n", "x", "o" }, "gh", "0^")
 map({ "n", "x", "o" }, "gl", "$")
 
-map("n", "<M-u>", "<Cmd>m .-2<CR>==", { desc = "Move current line up" })
-map("n", "<M-d>", "<Cmd>m .+1<CR>==", { desc = "Move current line down" })
-map("x", "<M-u>", ":m '<-2<CR>gv=gv", { desc = "Move current line up" })
-map("x", "<M-d>", ":m '>+1<CR>gv=gv", { desc = "Move current line down" })
-map("i", "<M-u>", "<Esc><Cmd>m .-2<CR>==gi", { desc = "Move current line up" })
-map("i", "<M-d>", "<Esc><Cmd>m .+1<CR>==gi", { desc = "Move current line down" })
+map("n", "<M-k>", "<Cmd>m .-2<CR>==", { desc = "Move current line up" })
+map("n", "<M-j>", "<Cmd>m .+1<CR>==", { desc = "Move current line down" })
+map("x", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move current line up" })
+map("x", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move current line down" })
+map("i", "<M-k>", "<Esc><Cmd>m .-2<CR>==gi", { desc = "Move current line up" })
+map("i", "<M-j>", "<Esc><Cmd>m .+1<CR>==gi", { desc = "Move current line down" })
+
+map({ "n", "x", "i" }, "<M-d>", "mzyyp`zj", { desc = "Duplicate current line" })
 
 -- toggle
 map({ "n", "x" }, "<leader>tw", function()
@@ -174,12 +172,20 @@ local gh = function(name) return "https://github.com/" .. name end
 local setup = function(name, opts) require(name).setup(opts or {}) end
 local autocmd = vim.api.nvim_create_autocmd
 
--- color scheme
+-- mini
 pack.add({
-  { src = gh("miRceLzeS/daibanana.nvim"), name = "daibanana" },
+  gh("nvim-mini/mini.pairs"),
+  gh("nvim-mini/mini.surround"),
+})
+
+-- theme
+pack.add({
+  { src = gh("rose-pine/neovim"), name = "rose-pine" },
 }, { load = true })
-setup("daibanana", { transparent = true })
-vim.cmd("colorscheme daibanana")
+setup("rose-pine", {
+  styles = { transparency = false },
+})
+vim.cmd("colorscheme rose-pine")
 
 -- icon
 pack.add({ gh("nvim-tree/nvim-web-devicons") }, { load = true })
@@ -187,15 +193,22 @@ setup("nvim-web-devicons")
 
 -- status line
 pack.add({ gh("nvim-lualine/lualine.nvim") })
-setup("lualine", { options = { theme = "daibanana" } })
-
+setup("lualine", { options = { theme = "rose-pine" } })
 pack.add({ gh("stevearc/oil.nvim") }, { load = true })
+
 setup("oil", {
+  columns = {
+    "icon",
+    "permissions",
+    "size",
+    "mtime",
+  },
   use_default_keymaps = false,
   keymaps = {
     ["H"] = { "actions.parent", mode = "n" },
     ["L"] = "actions.select",
     ["<CR>"] = "actions.select",
+    ["<Tab>"] = "actions.preview",
     ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
     ["<Leader>oq"] = { "actions.close", mode = "n" },
     ["<Leader>or"] = { "actions.refresh", mode = "n" },
@@ -243,31 +256,59 @@ pack.add({
 })
 
 -- treesitter
-local ensured_installed = { "c", "cpp", "rust", "go", "lua" }
+local ensure_installed = { "c", "cpp", "rust", "go", "lua" }
 
-autocmd({ "PackChanged" }, {
-  once = true,
-  callback = function(ev)
-    local name, kind = ev.data.spec.name, ev.data.kind
-    if name == "nvim-treesitter" and kind == "update" then
-      if not ev.data.active then vim.cmd.packadd("nvim-treesitter") end
-      vim.cmd("TSUpdate")
-    end
-  end,
-})
+--
+--autocmd({ "PackChanged" }, {
+--  once = true,
+--  callback = function(ev)
+--    local name, kind = ev.data.spec.name, ev.data.kind
+--    if name == "nvim-treesitter" and kind == "update" then
+--      if not ev.data.active then vim.cmd.packadd("nvim-treesitter") end
+--      vim.cmd("TSUpdate")
+--    end
+--  end,
+--})
+
+--pack.add({
+--  {
+--    src = gh("nvim-treesitter/nvim-treesitter"),
+--    version = "main",
+--  },
+--})
+--require("nvim-treesitter").install(ensured_installed)
+
+pack.add({ gh("romus204/tree-sitter-manager.nvim") })
+
 autocmd({ "FileType" }, {
   pattern = "*",
   callback = function(ev)
     pcall(vim.treesitter.start, ev.buf)
   end,
 })
-pack.add({
-  {
-    src = gh("nvim-treesitter/nvim-treesitter"),
-    version = "main",
-  },
+
+setup("tree-sitter-manager", {
+  ensure_installed = ensure_installed,
 })
-require("nvim-treesitter").install(ensured_installed)
+
+-- smart split, move, resize and mux integration
+pack.add({ gh("mrjones2014/smart-splits.nvim") })
+local smart_spllits = require("smart-splits")
+
+map({ "n", "x" }, "<C-Left>", smart_spllits.resize_left)
+map({ "n", "x" }, "<C-Right>", smart_spllits.resize_right)
+map({ "n", "x" }, "<C-Up>", smart_spllits.resize_up)
+map({ "n", "x" }, "<C-Down>", smart_spllits.resize_down)
+
+map({ "n", "x" }, "<C-h>", smart_spllits.move_cursor_left)
+map({ "n", "x" }, "<C-l>", smart_spllits.move_cursor_right)
+map({ "n", "x" }, "<C-k>", smart_spllits.move_cursor_up)
+map({ "n", "x" }, "<C-j>", smart_spllits.move_cursor_down)
+
+map({ "n", "x" }, "<C-w>h", smart_spllits.swap_buf_left)
+map({ "n", "x" }, "<C-w>l", smart_spllits.swap_buf_right)
+map({ "n", "x" }, "<C-w>k", smart_spllits.swap_buf_up)
+map({ "n", "x" }, "<C-w>j", smart_spllits.swap_buf_down)
 
 -- lsp
 local lsp = vim.lsp
@@ -282,6 +323,15 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
   end,
 })
 
+autocmd({ "LspAttach" }, {
+  callback = function(ev)
+    local client = lsp.get_client_by_id(ev.data.client_id)
+    if client then
+      client.server_capabilities.semanticTokensProvider = nil
+    end
+  end,
+})
+
 delmap({ "n", "x" }, "gra")
 delmap({ "n", "x" }, "gri")
 delmap({ "n", "x" }, "grn")
@@ -290,15 +340,10 @@ delmap({ "n", "x" }, "grt")
 delmap({ "n", "x" }, "grx")
 delmap({ "n", "x" }, "g0")
 delmap({ "i" }, "<C-s>")
+delmap({ "n" }, "K")
 
--- go
-lsp.config("gopls", {
-  settings = {
-    gopls = {
-      semanticTokens = true,
-    },
-  },
-})
+map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
+map({ "n", "x" }, "<Leader>h", lsp.buf.hover, { desc = "Hover information" })
 
 lsp.enable(installed)
 
@@ -310,16 +355,10 @@ setup("conform", {
   },
 })
 
--- mini
-pack.add({
-  gh("nvim-mini/mini.pairs"),
-  gh("nvim-mini/mini.surround"),
-})
-
 -- picker
 pack.add({ gh("ibhagwan/fzf-lua") })
 setup("fzf-lua", {
-  winopts  = {
+  winopts    = {
     width   = 0.8,
     height  = 0.9,
     preview = {
@@ -332,7 +371,7 @@ setup("fzf-lua", {
       winopts      = { number = false },
     },
   },
-  keymap   = {
+  keymap     = {
     builtin = {
       true,
       ["<C-d>"] = "preview-page-down",
@@ -345,8 +384,20 @@ setup("fzf-lua", {
       ["ctrl-q"] = "select-all+accept",
     },
   },
-  fzf_opts = {
+  fzf_opts   = {
     ["--layout"] = "reverse-list",
+    ["--cycle"] = true,
+  },
+  previewers = {
+    builtin = {
+      syntax         = true,
+      syntax_limit_l = 0,                -- syntax limit (lines), 0=nolimit
+      syntax_limit_b = 0,                -- syntax limit (bytes), 0=nolimit
+      limit_b        = 1024 * 1024 * 10, -- preview limit (bytes), 0=nolimit
+      treesitter     = {
+        enabled = true,
+      }
+    },
   },
 })
 
@@ -363,7 +414,6 @@ map({ "n", "x" }, "gr", "<Cmd>FzfLua lsp_references<CR>", { desc = "Goto referen
 map({ "n", "x" }, "gd", "<Cmd>FzfLua lsp_definitions<CR>", { desc = "Goto definition" })
 map({ "n", "x" }, "gt", "<Cmd>FzfLua lsp_typedefs<CR>", { desc = "Goto type definition" })
 map({ "n", "x" }, "gi", "<Cmd>FzfLua lsp_implementations<CR>", { desc = "Goto implementations" })
-map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
 map({ "n", "x" }, "<Leader>b", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
 map({ "n", "x" }, "<Leader>f", "<Cmd>FzfLua files cwd=.<CR>", { desc = "Find files" })
 map({ "n", "x" }, "<Leader>F", function()
@@ -376,11 +426,3 @@ map({ "n", "x" }, "<Leader>S", "<Cmd>FzfLua lsp_workspace_symbols<CR>", { desc =
 map({ "n", "x" }, "<Leader>c", "<Cmd>FzfLua lsp_code_actions<CR>", { desc = "Code actions" })
 map({ "n", "x" }, "<Leader>d", "<Cmd>FzfLua lsp_document_diagnostics<CR>", { desc = "Buffer-wide diagnostics" })
 map({ "n", "x" }, "<Leader>D", "<Cmd>FzfLua lsp_workspace_diagnostics<CR>", { desc = "Workspace-wide diagnostics" })
-
--- tmux
-pack.add({ gh("christoomey/vim-tmux-navigator") })
-
-map({ "n", "x" }, "<C-h>", "<Cmd>TmuxNavigateLeft<CR>", { desc = "Goto window left" })
-map({ "n", "x" }, "<C-l>", "<Cmd>TmuxNavigateRight<CR>", { desc = "Goto window right" })
-map({ "n", "x" }, "<C-k>", "<Cmd>TmuxNavigateUp<CR>", { desc = "Goto window up" })
-map({ "n", "x" }, "<C-j>", "<Cmd>TmuxNavigateDown<CR>", { desc = "Goto window down" })
