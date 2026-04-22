@@ -173,6 +173,13 @@ local setup = function(name, opts) require(name).setup(opts or {}) end
 local autocmd = vim.api.nvim_create_autocmd
 
 -- mini
+autocmd({ "CmdlineEnter", "InsertEnter" }, {
+  once = true,
+  callback = function()
+    setup("mini.pairs", { modes = { command = false } })
+    setup("mini.surround", { n_lines = 32 })
+  end,
+})
 pack.add({
   gh("nvim-mini/mini.pairs"),
   gh("nvim-mini/mini.surround"),
@@ -194,6 +201,8 @@ setup("nvim-web-devicons")
 -- status line
 pack.add({ gh("nvim-lualine/lualine.nvim") })
 setup("lualine", { options = { theme = "rose-pine" } })
+
+-- oil
 pack.add({ gh("stevearc/oil.nvim") }, { load = true })
 
 setup("oil", {
@@ -301,14 +310,6 @@ map({ "n", "x" }, "<C-w>j", smart_spllits.swap_buf_down)
 local lsp = vim.lsp
 local installed = { "clangd", "rust_analyzer", "gopls", "lua_ls" }
 pack.add({ gh("neovim/nvim-lspconfig") })
-
-autocmd({ "CmdlineEnter", "InsertEnter" }, {
-  once = true,
-  callback = function()
-    setup("mini.pairs", { modes = { command = true } })
-    setup("mini.surround", { n_lines = 32 })
-  end,
-})
 
 autocmd({ "LspAttach" }, {
   callback = function(ev)
