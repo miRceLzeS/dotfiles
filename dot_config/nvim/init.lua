@@ -61,7 +61,7 @@ opt.iskeyword:append("_", "-", ".")
 
 -- keymap util
 
-function map(mode, lhs, rhs, opts)
+local function map(mode, lhs, rhs, opts)
   local options = { noremap = true, silent = true }
 
   if opts then
@@ -70,11 +70,11 @@ function map(mode, lhs, rhs, opts)
   vim.keymap.set(mode, lhs, rhs, options)
 end
 
-function delmap(mode, lhs, opts)
+local function delmap(mode, lhs, opts)
   pcall(vim.keymap.del, mode, lhs, opts)
 end
 
-function op_motion_expr(op, motion)
+local function op_motion_expr(op, motion)
   if not op then return "" end
 
   if motion == "h" then
@@ -293,22 +293,40 @@ setup("render-markdown")
 
 -- smart split, move, resize and mux integration
 pack.add({ gh("mrjones2014/smart-splits.nvim") })
-local smart_spllits = require("smart-splits")
 
-map({ "n", "x" }, "<C-Left>", smart_spllits.resize_left)
-map({ "n", "x" }, "<C-Right>", smart_spllits.resize_right)
-map({ "n", "x" }, "<C-Up>", smart_spllits.resize_up)
-map({ "n", "x" }, "<C-Down>", smart_spllits.resize_down)
+if vim.env.TMUX then
+  local smart_splits = require("smart-splits")
 
-map({ "n", "x" }, "<C-h>", smart_spllits.move_cursor_left)
-map({ "n", "x" }, "<C-l>", smart_spllits.move_cursor_right)
-map({ "n", "x" }, "<C-k>", smart_spllits.move_cursor_up)
-map({ "n", "x" }, "<C-j>", smart_spllits.move_cursor_down)
+  map({ "n", "x" }, "<C-Left>", smart_splits.resize_left)
+  map({ "n", "x" }, "<C-Right>", smart_splits.resize_right)
+  map({ "n", "x" }, "<C-Up>", smart_splits.resize_up)
+  map({ "n", "x" }, "<C-Down>", smart_splits.resize_down)
 
-map({ "n", "x" }, "<C-w>h", smart_spllits.swap_buf_left)
-map({ "n", "x" }, "<C-w>l", smart_spllits.swap_buf_right)
-map({ "n", "x" }, "<C-w>k", smart_spllits.swap_buf_up)
-map({ "n", "x" }, "<C-w>j", smart_spllits.swap_buf_down)
+  map({ "n", "x" }, "<C-h>", smart_splits.move_cursor_left)
+  map({ "n", "x" }, "<C-l>", smart_splits.move_cursor_right)
+  map({ "n", "x" }, "<C-k>", smart_splits.move_cursor_up)
+  map({ "n", "x" }, "<C-j>", smart_splits.move_cursor_down)
+
+  map({ "n", "x" }, "<C-w>h", smart_splits.swap_buf_left)
+  map({ "n", "x" }, "<C-w>l", smart_splits.swap_buf_right)
+  map({ "n", "x" }, "<C-w>k", smart_splits.swap_buf_up)
+  map({ "n", "x" }, "<C-w>j", smart_splits.swap_buf_down)
+else
+  map({ "n", "x" }, "<C-Left>", "<cmd>vertical resize -2<CR>")
+  map({ "n", "x" }, "<C-Right>", "<cmd>vertical resize +2<CR>")
+  map({ "n", "x" }, "<C-Up>", "<cmd>resize +2<CR>")
+  map({ "n", "x" }, "<C-Down>", "<cmd>resize -2<CR>")
+
+  map({ "n", "x" }, "<C-h>", "<cmd>wincmd h<CR>")
+  map({ "n", "x" }, "<C-l>", "<cmd>wincmd l<CR>")
+  map({ "n", "x" }, "<C-k>", "<cmd>wincmd k<CR>")
+  map({ "n", "x" }, "<C-j>", "<cmd>wincmd j<CR>")
+
+  map({ "n", "x" }, "<C-w>h", "<cmd>wincmd H<CR>")
+  map({ "n", "x" }, "<C-w>l", "<cmd>wincmd L<CR>")
+  map({ "n", "x" }, "<C-w>k", "<cmd>wincmd K<CR>")
+  map({ "n", "x" }, "<C-w>j", "<cmd>wincmd J<CR>")
+end
 
 -- lsp
 local lsp = vim.lsp
@@ -393,7 +411,7 @@ setup("fzf-lua", {
   },
 })
 
-function workspace_root()
+local function workspace_root()
   for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
     if client.config and client.config.root_dir and client.config.root_dir ~= "" then
       return client.config.root_dir
