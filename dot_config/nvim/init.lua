@@ -207,10 +207,10 @@ pack.add({ gh("stevearc/oil.nvim") }, { load = true })
 
 setup("oil", {
   columns = {
-    "icon",
     "permissions",
     "size",
     "mtime",
+    "icon",
   },
   use_default_keymaps = false,
   keymaps = {
@@ -286,6 +286,10 @@ autocmd({ "FileType" }, {
 setup("tree-sitter-manager", {
   ensure_installed = ensure_installed,
 })
+
+-- markdown render
+pack.add({ gh("MeanderingProgrammer/render-markdown.nvim") })
+setup("render-markdown")
 
 -- smart split, move, resize and mux integration
 pack.add({ gh("mrjones2014/smart-splits.nvim") })
