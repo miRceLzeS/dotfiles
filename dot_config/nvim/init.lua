@@ -130,6 +130,8 @@ map("i", "<M-j>", "<Esc><Cmd>m .+1<CR>==gi", { desc = "Move current line down" }
 
 map({ "n", "x", "i" }, "<M-d>", "mzyyp`zj", { desc = "Duplicate current line" })
 
+map("t", "<Esc>", "<C-\\><C-n>")
+
 -- toggle
 map({ "n", "x" }, "<leader>tw", function()
   local wo = vim.wo
