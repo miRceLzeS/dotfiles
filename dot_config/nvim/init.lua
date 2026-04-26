@@ -204,6 +204,31 @@ setup("nvim-web-devicons")
 pack.add({ gh("nvim-lualine/lualine.nvim") })
 setup("lualine", { options = { theme = "rose-pine" } })
 
+-- git integration
+pack.add({ gh("lewis6991/gitsigns.nvim") })
+setup("gitsigns", {
+  signs = {
+    add = { text = '+' },
+    change = { text = '•' },
+    delete = { text = '-' },
+    topdelete = { text = '-' },
+    changedelete = { text = '•' },
+    untracked = { text = '┆' },
+  },
+  signs_staged = {
+    add = { text = '󰜄' },
+    change = { text = '󱗝' },
+    delete = { text = '󰛲' },
+    topdelete = { text = '󰛲' },
+    changedelete = { text = '󱗝' },
+    untracked = { text = '┆' },
+  },
+  current_line_blame = true,
+  current_line_blame_opts = {
+    delay = 256,
+  },
+})
+
 -- oil
 pack.add({ gh("stevearc/oil.nvim") }, { load = true })
 
