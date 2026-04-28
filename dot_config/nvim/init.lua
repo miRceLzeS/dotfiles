@@ -4,7 +4,6 @@ local G = vim.g
 G.mapleader = " "
 G.maplocalleader = "\\"
 
-
 -- [INFO] option
 local opt = vim.opt -- visual effect
 opt.colorcolumn = "64"
@@ -41,12 +40,13 @@ opt.tabstop = tab_spaces     -- number of visual spaces of a tab
 opt.shiftwidth = tab_spaces  -- number of spaces when auto indent
 opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
 
+-- [TODO] load on keys
 -- fold
-opt.foldenable = true
-opt.foldlevel = 99
-opt.foldlevelstart = 99
-opt.foldmethod = "expr"
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- opt.foldenable = true
+-- opt.foldlevel = 99
+-- opt.foldlevelstart = 99
+-- opt.foldmethod = "expr"
+-- opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 -- search: ignore case unless upper case character is typed
 opt.ignorecase = true
@@ -176,9 +176,30 @@ map({ "n" }, "<Leader>pu", vim.pack.update, { desc = "Update plugins" })
 
 -- [INFO] plugin
 local pack = vim.pack
-local gh = function(name) return "https://github.com/" .. name end
-local setup = function(name, opts) require(name).setup(opts or {}) end
 local autocmd = vim.api.nvim_create_autocmd
+
+local function gh(name)
+  return "https://github.com/" .. name
+end
+
+local function setup(name, opts)
+  require(name).setup(opts or {})
+end
+
+-- helper function for lazy loading
+local loaded = {}
+local function lazy_pack(name, setupfn)
+  if loaded[name] then
+    return
+  end
+
+  loaded[name] = true
+  vim.cmd.packadd(name)
+
+  if setupfn then
+    setupfn()
+  end
+end
 
 -- color scheme
 pack.add({
@@ -259,71 +280,6 @@ else
   map({ "n", "x" }, "<C-w>j", "<Cmd>wincmd J<CR>")
 end
 
--- mini
-pack.add({
-  gh("nvim-mini/mini.pairs"),
-  gh("nvim-mini/mini.surround"),
-})
-setup("mini.pairs", { modes = { command = false } })
-setup("mini.surround", { n_lines = 32 })
-
--- git integration
-
-pack.add({ gh("lewis6991/gitsigns.nvim") })
-setup("gitsigns", {
-  signs = {
-    add = { text = '+' },
-    change = { text = '•' },
-    delete = { text = '-' },
-    topdelete = { text = '-' },
-    changedelete = { text = '•' },
-    untracked = { text = '┆' },
-  },
-  signs_staged = {
-    add = { text = '󰜄' },
-    change = { text = '󱗝' },
-    delete = { text = '󰛲' },
-    topdelete = { text = '󰛲' },
-    changedelete = { text = '󱗝' },
-    untracked = { text = '┆' },
-  },
-  current_line_blame = true,
-  current_line_blame_opts = {
-    delay = 256,
-  },
-})
-
--- completion
-pack.add({
-  {
-    src = gh("saghen/blink.cmp"),
-    version = vim.version.range("1.*"),
-  },
-})
-setup("blink.cmp", {
-  completion = {
-    accept = { auto_brackets = { enabled = false }, },
-    documentation = {
-      auto_show = true,
-    },
-    list = {
-      selection = {
-        preselect = false,
-        auto_insert = true,
-      }
-    },
-  },
-  keymap = {
-    preset = "none",
-    ["<CR>"] = { "accept", "fallback" },
-    ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-    ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-    ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-    ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-  },
-  signature = { enabled = true },
-})
-
 -- treesitter
 pack.add({ gh("romus204/tree-sitter-manager.nvim") })
 setup("tree-sitter-manager", {
@@ -338,16 +294,12 @@ setup("tree-sitter-manager", {
   },
 })
 
-autocmd({ "BufReadPost", "BufNewFile" }, {
+autocmd({ "FileType" }, {
   pattern = "*",
   callback = function(ev)
     pcall(vim.treesitter.start, ev.buf)
   end,
 })
-
--- markdown render
-pack.add({ gh("MeanderingProgrammer/render-markdown.nvim") })
-setup("render-markdown")
 
 -- lsp
 local lsp = vim.lsp
@@ -389,9 +341,132 @@ setup("conform", {
   },
 })
 
+-- mini
+pack.add({
+  {
+    src = gh("nvim-mini/mini.pairs"),
+    load = function() end,
+  },
+  {
+    src = gh("nvim-mini/mini.surround"),
+    load = function() end,
+  },
+})
+autocmd({ "CmdlineEnter", "InsertEnter" }, {
+  once = true,
+  callback = function()
+    local mini_pairs = "mini.pairs"
+    lazy_pack(mini_pairs, function()
+      setup(mini_pairs, { modes = { command = false } })
+    end)
+
+    local mini_surround = "mini.surround"
+    lazy_pack(mini_surround, function()
+      setup(mini_surround, { n_lines = 32 })
+    end)
+  end
+})
+
+-- git integration
+pack.add({
+  {
+    src = gh("lewis6991/gitsigns.nvim"),
+    load = function() end,
+  },
+})
+autocmd({ "BufReadPost", "BufNewFile" }, {
+  once = true,
+  callback = function()
+    local name = "gitsigns"
+    lazy_pack(name, function()
+      setup(name, {
+        signs = {
+          add = { text = '+' },
+          change = { text = '•' },
+          delete = { text = '-' },
+          topdelete = { text = '-' },
+          changedelete = { text = '•' },
+          untracked = { text = '┆' },
+        },
+        signs_staged = {
+          add = { text = '󰜄' },
+          change = { text = '󱗝' },
+          delete = { text = '󰛲' },
+          topdelete = { text = '󰛲' },
+          changedelete = { text = '󱗝' },
+          untracked = { text = '┆' },
+        },
+        current_line_blame = true,
+        current_line_blame_opts = {
+          delay = 256,
+        },
+      })
+    end)
+  end
+})
+
+-- completion
+pack.add({
+  {
+    src = gh("saghen/blink.cmp"),
+    version = vim.version.range("1.*"),
+    load = function() end,
+  },
+})
+autocmd({ "CmdlineEnter", "InsertEnter" }, {
+  once = true,
+  callback = function()
+    local name = "blink.cmp"
+    lazy_pack(name, function()
+      setup(name, {
+        completion = {
+          accept = { auto_brackets = { enabled = false }, },
+          documentation = {
+            auto_show = true,
+          },
+          list = {
+            selection = {
+              preselect = false,
+              auto_insert = true,
+            }
+          },
+        },
+        keymap = {
+          preset = "none",
+          ["<CR>"] = { "accept", "fallback" },
+          ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+          ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+          ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+          ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+        },
+        signature = { enabled = true },
+
+      })
+    end)
+  end
+})
+-- markdown render
+pack.add({
+  {
+    src = gh("MeanderingProgrammer/render-markdown.nvim"),
+    load = function() end,
+  },
+})
+autocmd({ "BufReadPost", "BufNewFile" }, {
+  once = true,
+  callback = function()
+    local name = "render-markdown"
+    lazy_pack(name, function()
+      setup(name)
+    end)
+  end
+})
+
 -- picker
 pack.add({ gh("ibhagwan/fzf-lua") })
-setup("fzf-lua", {
+local fzf_lua = require("fzf-lua")
+fzf_lua.register_ui_select()
+fzf_lua.setup({
   winopts    = {
     width   = 0.8,
     height  = 0.9,
@@ -448,15 +523,14 @@ map({ "n", "x" }, "gr", "<Cmd>FzfLua lsp_references<CR>", { desc = "Goto referen
 map({ "n", "x" }, "gd", "<Cmd>FzfLua lsp_definitions<CR>", { desc = "Goto definition" })
 map({ "n", "x" }, "gt", "<Cmd>FzfLua lsp_typedefs<CR>", { desc = "Goto type definition" })
 map({ "n", "x" }, "gi", "<Cmd>FzfLua lsp_implementations<CR>", { desc = "Goto implementations" })
-map({ "n", "x" }, "<Leader>b", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
-map({ "n", "x" }, "<Leader>f", "<Cmd>FzfLua files cwd=.<CR>", { desc = "Find files" })
-map({ "n", "x" }, "<Leader>F", function()
+map({ "n", "x" }, "<Leader>fb", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
+map({ "n", "x" }, "<Leader>ff", "<Cmd>FzfLua files cwd=.<CR>", { desc = "Find files" })
+map({ "n", "x" }, "<Leader>fF", function()
   require("fzf-lua").files({ cwd = workspace_root() })
 end, { desc = "Find files" })
-map({ "n", "x" }, "<Leader>b", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
-map({ "n", "x" }, "<Leader>/", "<Cmd>FzfLua live_grep<CR>", { desc = "Live grep" })
-map({ "n", "x" }, "<Leader>s", "<Cmd>FzfLua lsp_document_symbols<CR>", { desc = "Buffer-wide symbols" })
-map({ "n", "x" }, "<Leader>S", "<Cmd>FzfLua lsp_workspace_symbols<CR>", { desc = "Workspace-wide symbols" })
-map({ "n", "x" }, "<Leader>c", "<Cmd>FzfLua lsp_code_actions<CR>", { desc = "Code actions" })
-map({ "n", "x" }, "<Leader>d", "<Cmd>FzfLua lsp_document_diagnostics<CR>", { desc = "Buffer-wide diagnostics" })
-map({ "n", "x" }, "<Leader>D", "<Cmd>FzfLua lsp_workspace_diagnostics<CR>", { desc = "Workspace-wide diagnostics" })
+map({ "n", "x" }, "<Leader>f/", "<Cmd>FzfLua live_grep<CR>", { desc = "Live grep" })
+map({ "n", "x" }, "<Leader>fs", "<Cmd>FzfLua lsp_document_symbols<CR>", { desc = "Buffer-wide symbols" })
+map({ "n", "x" }, "<Leader>fS", "<Cmd>FzfLua lsp_workspace_symbols<CR>", { desc = "Workspace-wide symbols" })
+map({ "n", "x" }, "<Leader>fc", "<Cmd>FzfLua lsp_code_actions<CR>", { desc = "Code actions" })
+map({ "n", "x" }, "<Leader>fd", "<Cmd>FzfLua lsp_document_diagnostics<CR>", { desc = "Buffer-wide diagnostics" })
+map({ "n", "x" }, "<Leader>fD", "<Cmd>FzfLua lsp_workspace_diagnostics<CR>", { desc = "Workspace-wide diagnostics" })
