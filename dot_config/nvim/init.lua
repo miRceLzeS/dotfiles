@@ -4,6 +4,7 @@ local G = vim.g
 G.mapleader = " "
 G.maplocalleader = "\\"
 
+
 -- [INFO] option
 local opt = vim.opt -- visual effect
 opt.colorcolumn = "64"
@@ -40,6 +41,13 @@ opt.tabstop = tab_spaces     -- number of visual spaces of a tab
 opt.shiftwidth = tab_spaces  -- number of spaces when auto indent
 opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
 
+-- fold
+opt.foldenable = true
+opt.foldlevel = 99
+opt.foldlevelstart = 99
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
 -- search: ignore case unless upper case character is typed
 opt.ignorecase = true
 opt.smartcase = true
@@ -72,22 +80,6 @@ end
 
 local function delmap(mode, lhs, opts)
   pcall(vim.keymap.del, mode, lhs, opts)
-end
-
-local function op_motion_expr(op, motion)
-  if not op then return "" end
-
-  if motion == "h" then
-    return string.format("leftabove v%s", op)
-  elseif motion == "l" then
-    return string.format("rightbelow v%s", op)
-  elseif motion == "k" then
-    return string.format("aboveleft %s", op)
-  elseif motion == "j" then
-    return string.format("%s", op)
-  else
-    return ""
-  end
 end
 
 -- delmap
@@ -141,10 +133,25 @@ map({ "n", "x" }, "<leader>tw", function()
 end, { desc = "toggle wrap" })
 
 -- yank
-map("x", "p", '"_dP')
 map("v", "<Leader>y", '"+y')
 
 -- window
+local function op_motion_expr(op, motion)
+  if not op then return "" end
+
+  if motion == "h" then
+    return string.format("leftabove v%s", op)
+  elseif motion == "l" then
+    return string.format("rightbelow v%s", op)
+  elseif motion == "k" then
+    return string.format("aboveleft %s", op)
+  elseif motion == "j" then
+    return string.format("%s", op)
+  else
+    return ""
+  end
+end
+
 map({ "n", "x" }, "<Leader>w", function()
   local ok, key = pcall(vim.fn.getcharstr)
   if not ok then return end
@@ -159,14 +166,13 @@ map({ "n", "x" }, "<Leader>wo", "<Cmd>only<CR>", { desc = "Close other windows" 
 
 -- tab
 map({ "n", "x" }, "[<Tab>", "<Cmd>tabprevious<CR>")
+
 map({ "n", "x" }, "]<Tab>", "<Cmd>tabnext<CR>")
-
 map({ "n", "x" }, "<Leader><Tab>n", "<Cmd>tabnew<CR>")
-
 map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>", { desc = "Close other tabs" })
 
 -- plugin manager
-map({ "n" }, "<Leader>pu", "<Cmd>lua vim.pack.update()<CR>", { desc = "Update plugins" })
+map({ "n" }, "<Leader>pu", vim.pack.update, { desc = "Update plugins" })
 
 -- [INFO] plugin
 local pack = vim.pack
@@ -174,37 +180,95 @@ local gh = function(name) return "https://github.com/" .. name end
 local setup = function(name, opts) require(name).setup(opts or {}) end
 local autocmd = vim.api.nvim_create_autocmd
 
--- mini
-autocmd({ "CmdlineEnter", "InsertEnter" }, {
-  once = true,
-  callback = function()
-    setup("mini.pairs", { modes = { command = false } })
-    setup("mini.surround", { n_lines = 32 })
-  end,
-})
-pack.add({
-  gh("nvim-mini/mini.pairs"),
-  gh("nvim-mini/mini.surround"),
-})
-
--- theme
+-- color scheme
 pack.add({
   { src = gh("rose-pine/neovim"), name = "rose-pine" },
-}, { load = true })
+})
 setup("rose-pine", {
   styles = { transparency = false },
 })
 vim.cmd("colorscheme rose-pine")
 
 -- icon
-pack.add({ gh("nvim-tree/nvim-web-devicons") }, { load = true })
+pack.add({ gh("nvim-tree/nvim-web-devicons") })
 setup("nvim-web-devicons")
 
 -- status line
 pack.add({ gh("nvim-lualine/lualine.nvim") })
 setup("lualine", { options = { theme = "rose-pine" } })
 
+-- oil
+pack.add({ gh("stevearc/oil.nvim") })
+setup("oil", {
+  columns = {
+    "permissions",
+    "size",
+    "mtime",
+    "icon",
+  },
+  use_default_keymaps = false,
+  keymaps = {
+    ["H"] = { "actions.parent", mode = "n" },
+    ["L"] = "actions.select",
+    ["<CR>"] = "actions.select",
+    ["<Tab>"] = "actions.preview",
+    ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
+    ["<Leader>oq"] = { "actions.close", mode = "n" },
+    ["<Leader>or"] = { "actions.refresh", mode = "n" },
+  },
+  view_options = {
+    show_hidden = true,
+  },
+})
+map("n", "<Leader>o", "<Cmd>Oil<CR>")
+
+-- smart split, move, resize and mux integration
+pack.add({ gh("mrjones2014/smart-splits.nvim") })
+if vim.env.TMUX then
+  local smart_splits = require("smart-splits")
+  smart_splits.setup({})
+
+  map({ "n", "x" }, "<C-Left>", smart_splits.resize_left)
+  map({ "n", "x" }, "<C-Right>", smart_splits.resize_right)
+  map({ "n", "x" }, "<C-Up>", smart_splits.resize_up)
+  map({ "n", "x" }, "<C-Down>", smart_splits.resize_down)
+
+  map({ "n", "x" }, "<C-h>", smart_splits.move_cursor_left)
+  map({ "n", "x" }, "<C-l>", smart_splits.move_cursor_right)
+  map({ "n", "x" }, "<C-k>", smart_splits.move_cursor_up)
+  map({ "n", "x" }, "<C-j>", smart_splits.move_cursor_down)
+
+  map({ "n", "x" }, "<C-w>h", smart_splits.swap_buf_left)
+  map({ "n", "x" }, "<C-w>l", smart_splits.swap_buf_right)
+  map({ "n", "x" }, "<C-w>k", smart_splits.swap_buf_up)
+  map({ "n", "x" }, "<C-w>j", smart_splits.swap_buf_down)
+else
+  map({ "n", "x" }, "<C-Left>", "<Cmd>vertical resize -2<CR>")
+  map({ "n", "x" }, "<C-Right>", "<Cmd>vertical resize +2<CR>")
+  map({ "n", "x" }, "<C-Up>", "<Cmd>resize +2<CR>")
+  map({ "n", "x" }, "<C-Down>", "<Cmd>resize -2<CR>")
+
+  map({ "n", "x" }, "<C-h>", "<Cmd>wincmd h<CR>")
+  map({ "n", "x" }, "<C-l>", "<Cmd>wincmd l<CR>")
+  map({ "n", "x" }, "<C-k>", "<Cmd>wincmd k<CR>")
+  map({ "n", "x" }, "<C-j>", "<Cmd>wincmd j<CR>")
+
+  map({ "n", "x" }, "<C-w>h", "<Cmd>wincmd H<CR>")
+  map({ "n", "x" }, "<C-w>l", "<Cmd>wincmd L<CR>")
+  map({ "n", "x" }, "<C-w>k", "<Cmd>wincmd K<CR>")
+  map({ "n", "x" }, "<C-w>j", "<Cmd>wincmd J<CR>")
+end
+
+-- mini
+pack.add({
+  gh("nvim-mini/mini.pairs"),
+  gh("nvim-mini/mini.surround"),
+})
+setup("mini.pairs", { modes = { command = false } })
+setup("mini.surround", { n_lines = 32 })
+
 -- git integration
+
 pack.add({ gh("lewis6991/gitsigns.nvim") })
 setup("gitsigns", {
   signs = {
@@ -229,136 +293,72 @@ setup("gitsigns", {
   },
 })
 
--- oil
-pack.add({ gh("stevearc/oil.nvim") }, { load = true })
-
-setup("oil", {
-  columns = {
-    "permissions",
-    "size",
-    "mtime",
-    "icon",
-  },
-  use_default_keymaps = false,
-  keymaps = {
-    ["H"] = { "actions.parent", mode = "n" },
-    ["L"] = "actions.select",
-    ["<CR>"] = "actions.select",
-    ["<Tab>"] = "actions.preview",
-    ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
-    ["<Leader>oq"] = { "actions.close", mode = "n" },
-    ["<Leader>or"] = { "actions.refresh", mode = "n" },
-  },
-  view_options = {
-    show_hidden = true,
-  },
-})
-map("n", "<Leader>o", "<Cmd>Oil<CR>")
-
 -- completion
-autocmd({ "CmdlineEnter", "InsertEnter" }, {
-  once = true,
-  callback = function()
-    setup("blink.cmp", {
-      completion = {
-        accept = { auto_brackets = { enabled = false }, },
-        documentation = {
-          auto_show = true,
-        },
-        list = {
-          selection = {
-            preselect = false,
-            auto_insert = true,
-          }
-        },
-      },
-      keymap = {
-        preset = "none",
-        ["<CR>"] = { "accept", "fallback" },
-        ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-        ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-        ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-      },
-      signature = { enabled = true },
-    })
-  end,
-})
 pack.add({
   {
     src = gh("saghen/blink.cmp"),
     version = vim.version.range("1.*"),
   },
 })
+setup("blink.cmp", {
+  completion = {
+    accept = { auto_brackets = { enabled = false }, },
+    documentation = {
+      auto_show = true,
+    },
+    list = {
+      selection = {
+        preselect = false,
+        auto_insert = true,
+      }
+    },
+  },
+  keymap = {
+    preset = "none",
+    ["<CR>"] = { "accept", "fallback" },
+    ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+    ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+    ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+    ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+  },
+  signature = { enabled = true },
+})
 
 -- treesitter
 pack.add({ gh("romus204/tree-sitter-manager.nvim") })
-local ensure_installed = {
-  "c",
-  "cpp",
-  "rust",
-  "go",
-  "lua",
-  "markdown",
-  "markdown_inline",
-}
+setup("tree-sitter-manager", {
+  ensure_installed = {
+    "c",
+    "cpp",
+    "rust",
+    "go",
+    "lua",
+    "markdown",
+    "markdown_inline",
+  },
+})
 
-autocmd({ "FileType" }, {
+autocmd({ "BufReadPost", "BufNewFile" }, {
   pattern = "*",
   callback = function(ev)
     pcall(vim.treesitter.start, ev.buf)
   end,
 })
 
-setup("tree-sitter-manager", {
-  ensure_installed = ensure_installed,
-})
-
 -- markdown render
 pack.add({ gh("MeanderingProgrammer/render-markdown.nvim") })
 setup("render-markdown")
 
--- smart split, move, resize and mux integration
-pack.add({ gh("mrjones2014/smart-splits.nvim") })
-
-if vim.env.TMUX then
-  local smart_splits = require("smart-splits")
-
-  map({ "n", "x" }, "<C-Left>", smart_splits.resize_left)
-  map({ "n", "x" }, "<C-Right>", smart_splits.resize_right)
-  map({ "n", "x" }, "<C-Up>", smart_splits.resize_up)
-  map({ "n", "x" }, "<C-Down>", smart_splits.resize_down)
-
-  map({ "n", "x" }, "<C-h>", smart_splits.move_cursor_left)
-  map({ "n", "x" }, "<C-l>", smart_splits.move_cursor_right)
-  map({ "n", "x" }, "<C-k>", smart_splits.move_cursor_up)
-  map({ "n", "x" }, "<C-j>", smart_splits.move_cursor_down)
-
-  map({ "n", "x" }, "<C-w>h", smart_splits.swap_buf_left)
-  map({ "n", "x" }, "<C-w>l", smart_splits.swap_buf_right)
-  map({ "n", "x" }, "<C-w>k", smart_splits.swap_buf_up)
-  map({ "n", "x" }, "<C-w>j", smart_splits.swap_buf_down)
-else
-  map({ "n", "x" }, "<C-Left>", "<cmd>vertical resize -2<CR>")
-  map({ "n", "x" }, "<C-Right>", "<cmd>vertical resize +2<CR>")
-  map({ "n", "x" }, "<C-Up>", "<cmd>resize +2<CR>")
-  map({ "n", "x" }, "<C-Down>", "<cmd>resize -2<CR>")
-
-  map({ "n", "x" }, "<C-h>", "<cmd>wincmd h<CR>")
-  map({ "n", "x" }, "<C-l>", "<cmd>wincmd l<CR>")
-  map({ "n", "x" }, "<C-k>", "<cmd>wincmd k<CR>")
-  map({ "n", "x" }, "<C-j>", "<cmd>wincmd j<CR>")
-
-  map({ "n", "x" }, "<C-w>h", "<cmd>wincmd H<CR>")
-  map({ "n", "x" }, "<C-w>l", "<cmd>wincmd L<CR>")
-  map({ "n", "x" }, "<C-w>k", "<cmd>wincmd K<CR>")
-  map({ "n", "x" }, "<C-w>j", "<cmd>wincmd J<CR>")
-end
-
 -- lsp
 local lsp = vim.lsp
-local installed = { "clangd", "rust_analyzer", "gopls", "lua_ls" }
+
 pack.add({ gh("neovim/nvim-lspconfig") })
+lsp.enable({
+  "clangd",
+  "rust_analyzer",
+  "gopls",
+  "lua_ls",
+})
 
 autocmd({ "LspAttach" }, {
   callback = function(ev)
@@ -366,23 +366,20 @@ autocmd({ "LspAttach" }, {
     if client then
       client.server_capabilities.semanticTokensProvider = nil
     end
+    delmap({ "n", "x" }, "gra")
+    delmap({ "n", "x" }, "gri")
+    delmap({ "n", "x" }, "grn")
+    delmap({ "n", "x" }, "grr")
+    delmap({ "n", "x" }, "grt")
+    delmap({ "n", "x" }, "grx")
+    delmap({ "n", "x" }, "g0")
+    delmap({ "i" }, "<C-s>")
+    delmap({ "n" }, "K")
+
+    map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
+    map({ "n", "x" }, "<Leader>h", lsp.buf.hover, { desc = "Hover information" })
   end,
 })
-
-delmap({ "n", "x" }, "gra")
-delmap({ "n", "x" }, "gri")
-delmap({ "n", "x" }, "grn")
-delmap({ "n", "x" }, "grr")
-delmap({ "n", "x" }, "grt")
-delmap({ "n", "x" }, "grx")
-delmap({ "n", "x" }, "g0")
-delmap({ "i" }, "<C-s>")
-delmap({ "n" }, "K")
-
-map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
-map({ "n", "x" }, "<Leader>h", lsp.buf.hover, { desc = "Hover information" })
-
-lsp.enable(installed)
 
 -- conform
 pack.add({ gh("stevearc/conform.nvim") })
