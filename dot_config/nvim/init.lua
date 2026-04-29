@@ -305,6 +305,18 @@ autocmd({ "FileType" }, {
 local lsp = vim.lsp
 
 pack.add({ gh("neovim/nvim-lspconfig") })
+
+-- lua
+lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" },
+      },
+    },
+  },
+})
+
 lsp.enable({
   "clangd",
   "rust_analyzer",
@@ -472,7 +484,7 @@ fzf_lua.setup({
     height  = 0.9,
     preview = {
       hidden       = false,
-      vertical     = "up:45%",
+      vertical     = "up:50%",
       horizontal   = "right:50%",
       layout       = "flex",
       flip_columns = 64,
