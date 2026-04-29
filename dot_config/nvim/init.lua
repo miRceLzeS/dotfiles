@@ -188,10 +188,12 @@ end
 
 -- helper function for lazy loading
 local loaded = {}
-local function lazy_pack(name, opts)
+local function lazy_pack(name, setupfn)
   if not loaded[name] then
     vim.schedule(function()
-      setup(name, opts)
+      if setupfn then
+        setupfn()
+      end
       vim.cmd.packadd(name)
     end)
 
@@ -365,8 +367,15 @@ pack.add({
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
   once = true,
   callback = function()
-    lazy_pack("mini.pairs", { modes = { command = false } })
-    lazy_pack("mini.surround", { n_lines = 32 })
+    local mini_pairs = "mini.pairs"
+    lazy_pack(mini_pairs, function()
+      setup(mini_pairs, { modes = { command = false } })
+    end)
+
+    local mini_surround = "mini.surround"
+    lazy_pack(mini_surround, function()
+      setup(mini_surround, { n_lines = 32 })
+    end)
   end
 })
 
@@ -380,28 +389,31 @@ pack.add({
 autocmd({ "UIEnter" }, {
   once = true,
   callback = function()
-    lazy_pack("gitsigns", {
-      signs = {
-        add = { text = '+' },
-        change = { text = '•' },
-        delete = { text = '-' },
-        topdelete = { text = '-' },
-        changedelete = { text = '•' },
-        untracked = { text = '┆' },
-      },
-      signs_staged = {
-        add = { text = '󰜄' },
-        change = { text = '󱗝' },
-        delete = { text = '󰛲' },
-        topdelete = { text = '󰛲' },
-        changedelete = { text = '󱗝' },
-        untracked = { text = '┆' },
-      },
-      current_line_blame = true,
-      current_line_blame_opts = {
-        delay = 256,
-      },
-    })
+    local name = "gitsigns"
+    lazy_pack(name, function()
+      setup(name, {
+        signs = {
+          add = { text = '+' },
+          change = { text = '•' },
+          delete = { text = '-' },
+          topdelete = { text = '-' },
+          changedelete = { text = '•' },
+          untracked = { text = '┆' },
+        },
+        signs_staged = {
+          add = { text = '󰜄' },
+          change = { text = '󱗝' },
+          delete = { text = '󰛲' },
+          topdelete = { text = '󰛲' },
+          changedelete = { text = '󱗝' },
+          untracked = { text = '┆' },
+        },
+        current_line_blame = true,
+        current_line_blame_opts = {
+          delay = 256,
+        },
+      })
+    end)
   end
 })
 
@@ -416,29 +428,32 @@ pack.add({
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
   once = true,
   callback = function()
-    lazy_pack("blink.cmp", {
-      completion = {
-        accept = { auto_brackets = { enabled = false }, },
-        documentation = {
-          auto_show = true,
+    local name = "blink.cmp"
+    lazy_pack(name, function()
+      setup(name, {
+        completion = {
+          accept = { auto_brackets = { enabled = false }, },
+          documentation = {
+            auto_show = true,
+          },
+          list = {
+            selection = {
+              preselect = false,
+              auto_insert = true,
+            }
+          },
         },
-        list = {
-          selection = {
-            preselect = false,
-            auto_insert = true,
-          }
+        keymap = {
+          preset = "none",
+          ["<CR>"] = { "accept", "fallback" },
+          ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+          ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+          ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+          ["<C-d>"] = { "scroll_documentation_down", "fallback" },
         },
-      },
-      keymap = {
-        preset = "none",
-        ["<CR>"] = { "accept", "fallback" },
-        ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-        ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-        ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-      },
-      signature = { enabled = true },
-    })
+        signature = { enabled = true },
+      })
+    end)
   end
 })
 -- markdown render
@@ -451,7 +466,8 @@ pack.add({
 autocmd({ "BufReadPost", "BufNewFile" }, {
   once = true,
   callback = function()
-    lazy_pack("render-markdown")
+    local name = "render-markdown"
+    lazy_pack(name, function() setup(name) end)
   end
 })
 
@@ -465,8 +481,7 @@ pack.add({
 
 local function fzf()
   local name = "fzf-lua"
-
-  if not loaded[name] then
+  lazy_pack(name, function()
     setup(name, {
       winopts    = {
         width   = 0.8,
@@ -511,7 +526,7 @@ local function fzf()
       },
     })
     require(name).register_ui_select()
-  end
+  end)
 
   return require(name)
 end
@@ -530,12 +545,14 @@ map({ "n", "x" }, "gd", function() fzf().lsp_definitions() end, { desc = "Goto d
 map({ "n", "x" }, "gt", function() fzf().lsp_typedefs() end, { desc = "Goto definition" })
 map({ "n", "x" }, "gi", function() fzf().lsp_implementations() end, { desc = "Goto implementations" })
 map({ "n", "x" }, "<Leader>fb", function() fzf().buffers() end, { desc = "Find buffers" })
-map({ "n", "x" }, "<Leader>ff", function () fzf().files({ cwd = "." }) end, { desc = "Find files" })
-map({ "n", "x" }, "<Leader>fF", function () fzf().files({ cwd = workspace_root() }) end, { desc = "Find files workspace-wide" })
-map({ "n", "x" }, "<Leader>f/", function () fzf().live_grep() end, { desc = "Live grep" })
-map({ "n", "x" }, "<Leader>fs", function () fzf().lsp_document_symbols() end, { desc = "Find symbols buffer-wide" })
-map({ "n", "x" }, "<Leader>fS", function () fzf().lsp_workspace_symbols() end, { desc = "Find symbols workspace-wide" })
-map({ "n", "x" }, "<Leader>fc", function () fzf().lsp_code_actions() end, { desc = "Code actions" })
-map({ "n", "x" }, "<Leader>fd", function () fzf().lsp_document_diagnostics() end, { desc = "List diagnostics buffer-wide" })
-map({ "n", "x" }, "<Leader>fD", function () fzf().lsp_workspace_diagnostics() end, { desc = "List diagnostics workspace-wide" })
-
+map({ "n", "x" }, "<Leader>ff", function() fzf().files({ cwd = "." }) end, { desc = "Find files" })
+map({ "n", "x" }, "<Leader>fF", function() fzf().files({ cwd = workspace_root() }) end,
+  { desc = "Find files workspace-wide" })
+map({ "n", "x" }, "<Leader>f/", function() fzf().live_grep() end, { desc = "Live grep" })
+map({ "n", "x" }, "<Leader>fs", function() fzf().lsp_document_symbols() end, { desc = "Find symbols buffer-wide" })
+map({ "n", "x" }, "<Leader>fS", function() fzf().lsp_workspace_symbols() end, { desc = "Find symbols workspace-wide" })
+map({ "n", "x" }, "<Leader>fc", function() fzf().lsp_code_actions() end, { desc = "Code actions" })
+map({ "n", "x" }, "<Leader>fd", function() fzf().lsp_document_diagnostics() end,
+  { desc = "List diagnostics buffer-wide" })
+map({ "n", "x" }, "<Leader>fD", function() fzf().lsp_workspace_diagnostics() end,
+  { desc = "List diagnostics workspace-wide" })
