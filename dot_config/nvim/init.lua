@@ -289,6 +289,7 @@ setup("tree-sitter-manager", {
     "rust",
     "go",
     "lua",
+    "python",
     "markdown",
     "markdown_inline",
   },

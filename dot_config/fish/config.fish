@@ -69,9 +69,3 @@ if command -q lazygit
     end
 end
 
-if command -q zellij
-    function zj --wraps zellij
-        command zellij $argv
-    end
-end
-

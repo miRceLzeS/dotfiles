@@ -72,8 +72,8 @@ brew install lua-language-server
 ### neovim
 
 ```sh
-# nvim-treesitter
-cargo install --locked tree-sitter-cli
+# tree sitter cli
+brew install tree-sitter-cli
 ```
 
 ## archlinux
