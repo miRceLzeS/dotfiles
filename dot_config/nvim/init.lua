@@ -189,16 +189,14 @@ end
 -- helper function for lazy loading
 local loaded = {}
 local function lazy_pack(name, opts)
-  if loaded[name] then
-    return
+  if not loaded[name] then
+    vim.schedule(function()
+      setup(name, opts)
+      vim.cmd.packadd(name)
+    end)
+
+    loaded[name] = true
   end
-
-  vim.schedule(function()
-    setup(name, opts)
-    vim.cmd.packadd(name)
-  end)
-
-  loaded[name] = true
 end
 
 -- color scheme
@@ -464,13 +462,12 @@ pack.add({
     load = function() end,
   },
 })
-autocmd({ "UIEnter" }, {
-  once = true,
-  callback = function()
-    local name = "fzf-lua"
-    local fzf_lua = require(name)
-    fzf_lua.register_ui_select()
-    lazy_pack(name, {
+
+local function fzf()
+  local name = "fzf-lua"
+
+  if not loaded[name] then
+    setup(name, {
       winopts    = {
         width   = 0.8,
         height  = 0.9,
@@ -513,28 +510,32 @@ autocmd({ "UIEnter" }, {
         },
       },
     })
+    require(name).register_ui_select()
+  end
 
-    local function workspace_root()
-      for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-        if client.config and client.config.root_dir and client.config.root_dir ~= "" then
-          return client.config.root_dir
-        end
-      end
-      return vim.fn.getcwd()
+  return require(name)
+end
+
+local function workspace_root()
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+    if client.config and client.config.root_dir and client.config.root_dir ~= "" then
+      return client.config.root_dir
     end
+  end
+  return vim.fn.getcwd()
+end
 
-    map({ "n", "x" }, "gr", "<Cmd>FzfLua lsp_references<CR>", { desc = "Goto references" })
-    map({ "n", "x" }, "gd", "<Cmd>FzfLua lsp_definitions<CR>", { desc = "Goto definition" })
-    map({ "n", "x" }, "gt", "<Cmd>FzfLua lsp_typedefs<CR>", { desc = "Goto type definition" })
-    map({ "n", "x" }, "gi", "<Cmd>FzfLua lsp_implementations<CR>", { desc = "Goto implementations" })
-    map({ "n", "x" }, "<Leader>fb", "<Cmd>FzfLua buffers<CR>", { desc = "Find buffers" })
-    map({ "n", "x" }, "<Leader>ff", "<Cmd>FzfLua files cwd=.<CR>", { desc = "Find files" })
-    map({ "n", "x" }, "<Leader>fF", function() fzf_lua.files({ cwd = workspace_root() }) end, { desc = "Find files" })
-    map({ "n", "x" }, "<Leader>f/", "<Cmd>FzfLua live_grep<CR>", { desc = "Live grep" })
-    map({ "n", "x" }, "<Leader>fs", "<Cmd>FzfLua lsp_document_symbols<CR>", { desc = "Buffer-wide symbols" })
-    map({ "n", "x" }, "<Leader>fS", "<Cmd>FzfLua lsp_workspace_symbols<CR>", { desc = "Workspace-wide symbols" })
-    map({ "n", "x" }, "<Leader>fc", "<Cmd>FzfLua lsp_code_actions<CR>", { desc = "Code actions" })
-    map({ "n", "x" }, "<Leader>fd", "<Cmd>FzfLua lsp_document_diagnostics<CR>", { desc = "Buffer-wide diagnostics" })
-    map({ "n", "x" }, "<Leader>fD", "<Cmd>FzfLua lsp_workspace_diagnostics<CR>", { desc = "Workspace-wide diagnostics" })
-  end,
-})
+map({ "n", "x" }, "gr", function() fzf().lsp_references() end, { desc = "Goto references" })
+map({ "n", "x" }, "gd", function() fzf().lsp_definitions() end, { desc = "Goto definition" })
+map({ "n", "x" }, "gt", function() fzf().lsp_typedefs() end, { desc = "Goto definition" })
+map({ "n", "x" }, "gi", function() fzf().lsp_implementations() end, { desc = "Goto implementations" })
+map({ "n", "x" }, "<Leader>fb", function() fzf().buffers() end, { desc = "Find buffers" })
+map({ "n", "x" }, "<Leader>ff", function () fzf().files({ cwd = "." }) end, { desc = "Find files" })
+map({ "n", "x" }, "<Leader>fF", function () fzf().files({ cwd = workspace_root() }) end, { desc = "Find files workspace-wide" })
+map({ "n", "x" }, "<Leader>f/", function () fzf().live_grep() end, { desc = "Live grep" })
+map({ "n", "x" }, "<Leader>fs", function () fzf().lsp_document_symbols() end, { desc = "Find symbols buffer-wide" })
+map({ "n", "x" }, "<Leader>fS", function () fzf().lsp_workspace_symbols() end, { desc = "Find symbols workspace-wide" })
+map({ "n", "x" }, "<Leader>fc", function () fzf().lsp_code_actions() end, { desc = "Code actions" })
+map({ "n", "x" }, "<Leader>fd", function () fzf().lsp_document_diagnostics() end, { desc = "List diagnostics buffer-wide" })
+map({ "n", "x" }, "<Leader>fD", function () fzf().lsp_workspace_diagnostics() end, { desc = "List diagnostics workspace-wide" })
+
