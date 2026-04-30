@@ -190,12 +190,10 @@ end
 local loaded = {}
 local function lazy_pack(name, setupfn)
   if not loaded[name] then
-    vim.schedule(function()
-      if setupfn then
-        setupfn()
-      end
-      vim.cmd.packadd(name)
-    end)
+    if setupfn then
+      setupfn()
+    end
+    vim.cmd.packadd(name)
 
     loaded[name] = true
   end
