@@ -329,6 +329,7 @@ autocmd({ "LspAttach" }, {
     if client then
       client.server_capabilities.semanticTokensProvider = nil
     end
+
     delmap({ "n", "x" }, "gra")
     delmap({ "n", "x" }, "gri")
     delmap({ "n", "x" }, "grn")
@@ -337,7 +338,7 @@ autocmd({ "LspAttach" }, {
     delmap({ "n", "x" }, "grx")
     delmap({ "n", "x" }, "g0")
     delmap({ "i" }, "<C-s>")
-    delmap({ "n" }, "K")
+    delmap({ "n" }, "K", { buf = ev.buf })
 
     map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
     map({ "n", "x" }, "<Leader>h", lsp.buf.hover, { desc = "Hover information" })
