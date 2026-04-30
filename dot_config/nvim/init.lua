@@ -389,30 +389,32 @@ pack.add({
 autocmd({ "UIEnter" }, {
   once = true,
   callback = function()
-    local name = "gitsigns"
-    lazy_pack(name, function()
-      setup(name, {
-        signs = {
-          add = { text = '+' },
-          change = { text = '•' },
-          delete = { text = '-' },
-          topdelete = { text = '-' },
-          changedelete = { text = '•' },
-          untracked = { text = '┆' },
-        },
-        signs_staged = {
-          add = { text = '󰜄' },
-          change = { text = '󱗝' },
-          delete = { text = '󰛲' },
-          topdelete = { text = '󰛲' },
-          changedelete = { text = '󱗝' },
-          untracked = { text = '┆' },
-        },
-        current_line_blame = true,
-        current_line_blame_opts = {
-          delay = 256,
-        },
-      })
+    vim.schedule(function()
+      local name = "gitsigns"
+      lazy_pack(name, function()
+        setup(name, {
+          signs = {
+            add = { text = '+' },
+            change = { text = '•' },
+            delete = { text = '-' },
+            topdelete = { text = '-' },
+            changedelete = { text = '•' },
+            untracked = { text = '┆' },
+          },
+          signs_staged = {
+            add = { text = '󰜄' },
+            change = { text = '󱗝' },
+            delete = { text = '󰛲' },
+            topdelete = { text = '󰛲' },
+            changedelete = { text = '󱗝' },
+            untracked = { text = '┆' },
+          },
+          current_line_blame = true,
+          current_line_blame_opts = {
+            delay = 256,
+          },
+        })
+      end)
     end)
   end
 })
