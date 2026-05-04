@@ -65,6 +65,12 @@ opt.timeoutlen = 512
 opt.undofile = true
 opt.updatetime = 256
 
+-- external
+if vim.fn.executable("rg") then
+  opt.grepprg = "rg --vimgrep --smart-case --hidden"
+  opt.grepformat = "%f:%l:%c:%m"
+end
+
 -- motion
 opt.iskeyword:remove({ "_", "-", "." })
 
@@ -131,7 +137,6 @@ map({ "n", "x" }, "<M-t>w", function()
   wo.colorcolumn = wo.wrap and "" or "64" -- [TODO] change to autocmd
 end, { desc = "toggle wrap" })
 
-
 -- yank
 map("v", "<Leader>y", '"+y')
 
@@ -166,8 +171,8 @@ map({ "n", "x" }, "<Leader>wo", "<Cmd>only<CR>", { desc = "Close other windows" 
 
 -- tab
 map({ "n", "x" }, "[<Tab>", "<Cmd>tabprevious<CR>")
-
 map({ "n", "x" }, "]<Tab>", "<Cmd>tabnext<CR>")
+
 map({ "n", "x" }, "<Leader><Tab>n", "<Cmd>tabnew<CR>")
 map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>", { desc = "Close other tabs" })
 
@@ -240,6 +245,43 @@ setup("oil", {
   },
 })
 map("n", "<Leader>o", "<Cmd>Oil<CR>")
+
+-- quicker
+pack.add({ gh("stevearc/quicker.nvim") })
+local quicker = require("quicker")
+setup("quicker", {
+  keys = {
+    {
+      "<Tab>",
+      function() quicker.expand({ before = 4, after = 4 }) end,
+      desc = "Expand quickfix context"
+    },
+    {
+      "<Esc>",
+      function() quicker.collapse() end,
+      desc = "Collapse quickfix context"
+    },
+  },
+  highlight = {
+    lsp = false,
+  }
+})
+
+map("n", "<Leader>q",
+  function()
+    quicker.toggle()
+    vim.cmd("wincmd j")
+  end,
+  { desc = "Quicker fix list" }
+)
+
+map("n", "<Leader>l",
+  function()
+    quicker.toggle({ loclis = true })
+    vim.cmd("wincmd j")
+  end,
+  { desc = "Quicker fix local list" }
+)
 
 -- smart split, move, resize and mux integration
 pack.add({ gh("mrjones2014/smart-splits.nvim") })
@@ -458,6 +500,7 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
     end)
   end
 })
+
 -- markdown render
 pack.add({
   {
@@ -527,6 +570,7 @@ local function fzf()
         },
       },
     })
+
     require(name).register_ui_select()
   end)
 
@@ -542,19 +586,19 @@ local function workspace_root()
   return vim.fn.getcwd()
 end
 
-map({ "n", "x" }, "gr", function() fzf().lsp_references() end, { desc = "Goto references" })
-map({ "n", "x" }, "gd", function() fzf().lsp_definitions() end, { desc = "Goto definition" })
-map({ "n", "x" }, "gt", function() fzf().lsp_typedefs() end, { desc = "Goto definition" })
-map({ "n", "x" }, "gi", function() fzf().lsp_implementations() end, { desc = "Goto implementations" })
-map({ "n", "x" }, "<Leader>fb", function() fzf().buffers() end, { desc = "Find buffers" })
-map({ "n", "x" }, "<Leader>ff", function() fzf().files({ cwd = "." }) end, { desc = "Find files" })
-map({ "n", "x" }, "<Leader>fF", function() fzf().files({ cwd = workspace_root() }) end,
+map("n", "gr", function() fzf().lsp_references() end, { desc = "Goto references" })
+map("n", "gd", function() fzf().lsp_definitions() end, { desc = "Goto definition" })
+map("n", "gt", function() fzf().lsp_typedefs() end, { desc = "Goto definition" })
+map("n", "gi", function() fzf().lsp_implementations() end, { desc = "Goto implementations" })
+map("n", "<Leader>b", function() fzf().buffers() end, { desc = "Find buffers" })
+map("n", "<Leader>f", function() fzf().files({ cwd = "." }) end, { desc = "Find files" })
+map("n", "<Leader>F", function() fzf().files({ cwd = workspace_root() }) end,
   { desc = "Find files workspace-wide" })
-map({ "n", "x" }, "<Leader>f/", function() fzf().live_grep() end, { desc = "Live grep" })
-map({ "n", "x" }, "<Leader>fs", function() fzf().lsp_document_symbols() end, { desc = "Find symbols buffer-wide" })
-map({ "n", "x" }, "<Leader>fS", function() fzf().lsp_workspace_symbols() end, { desc = "Find symbols workspace-wide" })
-map({ "n", "x" }, "<Leader>fc", function() fzf().lsp_code_actions() end, { desc = "Code actions" })
-map({ "n", "x" }, "<Leader>fd", function() fzf().lsp_document_diagnostics() end,
+map("n", "<Leader>/", function() fzf().live_grep() end, { desc = "Live grep" })
+map("n", "<Leader>s", function() fzf().lsp_document_symbols() end, { desc = "Find symbols buffer-wide" })
+map("n", "<Leader>S", function() fzf().lsp_workspace_symbols() end, { desc = "Find symbols workspace-wide" })
+map("n", "<Leader>c", function() fzf().lsp_code_actions() end, { desc = "Code actions" })
+map("n", "<Leader>d", function() fzf().lsp_document_diagnostics() end,
   { desc = "List diagnostics buffer-wide" })
-map({ "n", "x" }, "<Leader>fD", function() fzf().lsp_workspace_diagnostics() end,
+map("n", "<Leader>D", function() fzf().lsp_workspace_diagnostics() end,
   { desc = "List diagnostics workspace-wide" })

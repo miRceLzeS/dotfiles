@@ -7,4 +7,4 @@ cursor-style-blink = false
 macos-option-as-alt = left
 shell-integration-features = ssh-terminfo,ssh-env
 window-decoration = false
-# config-file = ?shader.conf
+config-file = ?shader.conf
