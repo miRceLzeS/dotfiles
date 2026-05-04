@@ -283,6 +283,24 @@ map("n", "<Leader>l",
   { desc = "Quicker fix local list" }
 )
 
+-- conform
+pack.add({
+  {
+    src = gh("stevearc/conform.nvim"),
+    load = function() end,
+  }
+})
+autocmd({ "InsertEnter" }, {
+  once = true,
+  callback = function()
+    setup("conform", {
+      format_after_save = {
+        lsp_format = "fallback",
+      },
+    })
+  end
+})
+
 -- smart split, move, resize and mux integration
 pack.add({ gh("mrjones2014/smart-splits.nvim") })
 if vim.env.TMUX then
@@ -385,14 +403,6 @@ autocmd({ "LspAttach" }, {
     map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
     map({ "n", "x" }, "<Leader>h", lsp.buf.hover, { desc = "Hover information" })
   end,
-})
-
--- conform
-pack.add({ gh("stevearc/conform.nvim") })
-setup("conform", {
-  format_after_save = {
-    lsp_format = "fallback",
-  },
 })
 
 -- mini
