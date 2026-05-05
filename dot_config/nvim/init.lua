@@ -511,6 +511,33 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
   end
 })
 
+-- diagnostics
+vim.diagnostic.config({
+  virtual_lines = {
+    current_line = true,
+  },
+})
+
+map("n", "<Leader>D",
+  function()
+    vim.diagnostic.setqflist({
+      open = true,
+      title = "Global diagnostics",
+    })
+  end,
+  { desc = "Buffer-local diagnostics" }
+)
+
+map("n", "<Leader>d",
+  function()
+    vim.diagnostic.setloclist({
+      open = true,
+      title = "Local diagnostics",
+    })
+  end,
+  { desc = "Buffer-local diagnostics" }
+)
+
 -- markdown render
 pack.add({
   {
@@ -608,7 +635,3 @@ map("n", "<Leader>/", function() fzf().live_grep() end, { desc = "Live grep" })
 map("n", "<Leader>s", function() fzf().lsp_document_symbols() end, { desc = "Find symbols buffer-wide" })
 map("n", "<Leader>S", function() fzf().lsp_workspace_symbols() end, { desc = "Find symbols workspace-wide" })
 map("n", "<Leader>c", function() fzf().lsp_code_actions() end, { desc = "Code actions" })
-map("n", "<Leader>d", function() fzf().lsp_document_diagnostics() end,
-  { desc = "List diagnostics buffer-wide" })
-map("n", "<Leader>D", function() fzf().lsp_workspace_diagnostics() end,
-  { desc = "List diagnostics workspace-wide" })
