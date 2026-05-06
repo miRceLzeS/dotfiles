@@ -130,12 +130,10 @@ map({ "n", "x", "i" }, "<M-d>", "mzyyp`zj", { desc = "Duplicate current line" })
 
 -- toggle
 -- wrap
-map({ "n", "x" }, "<M-t>w", function()
-  local wo = vim.wo
-
-  wo.wrap = not wo.wrap
-  wo.colorcolumn = wo.wrap and "" or "64" -- [TODO] change to autocmd
-end, { desc = "toggle wrap" })
+map({ "n", "x" }, "<Leader>uw", function()
+  opt.wrap = not opt.wrap
+  opt.colorcolumn = opt.wrap and "" or "64" -- [TODO] change to autocmd
+end, { desc = "Toggle wrap" })
 
 -- yank
 map("v", "<Leader>y", '"+y')
@@ -157,7 +155,7 @@ local function op_motion_expr(op, motion)
   end
 end
 
-map({ "n", "x" }, "<Leader>w", function()
+map({ "n", "x" }, "<Leader>ws", function()
   local ok, key = pcall(vim.fn.getcharstr)
   if not ok then return end
 
@@ -167,13 +165,11 @@ map({ "n", "x" }, "<Leader>w", function()
   vim.cmd(expr)
 end, { desc = "Split window to direction" })
 
-map({ "n", "x" }, "<Leader>wo", "<Cmd>only<CR>", { desc = "Close other windows" })
-
 -- tab
 map({ "n", "x" }, "[<Tab>", "<Cmd>tabprevious<CR>")
 map({ "n", "x" }, "]<Tab>", "<Cmd>tabnext<CR>")
 
-map({ "n", "x" }, "<Leader><Tab>n", "<Cmd>tabnew<CR>")
+map({ "n", "x" }, "<Leader><Tab>n", "<Cmd>tabnew<CR>", { desc = "Create new tab" })
 map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>", { desc = "Close other tabs" })
 
 -- plugin manager
@@ -267,7 +263,7 @@ setup("quicker", {
   }
 })
 
-map("n", "<Leader>q",
+map("n", "<Leader>Q",
   function()
     quicker.toggle()
     vim.cmd("wincmd j")
@@ -275,7 +271,7 @@ map("n", "<Leader>q",
   { desc = "Quicker fix list" }
 )
 
-map("n", "<Leader>l",
+map("n", "<Leader>q",
   function()
     quicker.toggle({ loclis = true })
     vim.cmd("wincmd j")
@@ -390,6 +386,16 @@ autocmd({ "LspAttach" }, {
       client.server_capabilities.semanticTokensProvider = nil
     end
 
+    if client and client.server_capabilities.inlayHintProvider then
+      map({ "n", "x" }, "<Leader>ui", function()
+          lsp.inlay_hint.enable(
+            not lsp.inlay_hint.is_enabled({ bufnr = ev.buf }),
+            { bufrn = ev.buf }
+          )
+        end,
+        { desc = "Toggle inlay hint" })
+    end
+
     delmap({ "n", "x" }, "gra")
     delmap({ "n", "x" }, "gri")
     delmap({ "n", "x" }, "grn")
@@ -400,8 +406,8 @@ autocmd({ "LspAttach" }, {
     delmap({ "i" }, "<C-s>")
     delmap({ "n" }, "K", { buf = ev.buf })
 
-    map({ "n", "x" }, "<Leader>r", lsp.buf.rename, { desc = "Rename symbol" })
-    map({ "n", "x" }, "<Leader>h", lsp.buf.hover, { desc = "Hover information" })
+    map({ "n", "x" }, "<Leader>lr", lsp.buf.rename, { desc = "Rename symbol" })
+    map({ "n", "x" }, "<Leader>lh", lsp.buf.hover, { desc = "Hover information" })
   end,
 })
 
@@ -513,6 +519,7 @@ autocmd({ "CmdlineEnter", "InsertEnter" }, {
 
 -- diagnostics
 vim.diagnostic.config({
+  update_in_insert = true,
   virtual_lines = {
     current_line = true,
   },
