@@ -56,10 +56,80 @@ lz.add({
   { src = "https://github.com/stevearc/conform.nvim",             name = "conform" },
   { src = "https://github.com/stevearc/quicker.nvim",             name = "quicker" },
   { src = "https://github.com/ibhagwan/fzf-lua",                  name = "fzf-lua" },
+  { src = "https://github.com/lewis6991/gitsigns.nvim",           name = "gitsigns" },
+  { src = "https://github.com/neogitorg/neogit",                  name = "neogit" },
 })
 
 lz.very_lazy("lualine", function()
-  require("lualine").setup({ options = { theme = "rose-pine" } })
+  require("lualine").setup({
+    options = {
+      theme = "rose-pine",
+      component_separators = "",
+      section_separators = "",
+      globalstatus = true,
+    },
+    sections = {
+      lualine_a = { "mode" },
+      lualine_b = {
+        {
+          "branch",
+          icon = "",
+          seperator = "",
+          padding = { left = 1, right = 0 },
+        },
+        {
+          "diff",
+          source = function()
+            local gitsigns = vim.b.gitsigns_status_dict
+            if gitsigns then
+              return {
+                added = gitsigns.added,
+                modified = gitsigns.changed,
+                removed = gitsigns.removed,
+              }
+            end
+          end,
+          symbols = {
+            added = "+",
+            modified = "~",
+            removed = "-",
+          },
+        },
+      },
+      lualine_c = {
+        {
+          "filetype",
+          icon_only = true,
+          colored = true,
+          seperator = "",
+          padding = { left = 1, right = 0 },
+        },
+        {
+          "filename",
+          path = 0,
+          seperator = "",
+          padding = { left = 0, right = 0 },
+          symbols = {
+            modified = "●",
+            readonly = "󰌾",
+          },
+        },
+      },
+      lualine_x = {
+        {
+          "diagnostics",
+          symbols = {
+            error = "󰅚 ",
+            warn = "󰀪 ",
+            info = "󰋽 ",
+            hint = "󰌶 ",
+          },
+        },
+      },
+      lualine_y = { "progress" },
+      lualine_z = { "location" },
+    },
+  })
 end)
 
 lz.very_lazy("smart-splits", function()
@@ -257,7 +327,6 @@ lz.keys("fzf-lua", function()
         true,
         ["ctrl-d"] = "preview-page-down",
         ["ctrl-u"] = "preview-page-up",
-        ["ctrl-a"] = "select-all+accept",
       },
     },
     fzf_opts   = {
@@ -270,9 +339,7 @@ lz.keys("fzf-lua", function()
         syntax_limit_l = 0,                -- syntax limit (lines), 0=nolimit
         syntax_limit_b = 0,                -- syntax limit (bytes), 0=nolimit
         limit_b        = 1024 * 1024 * 10, -- preview limit (bytes), 0=nolimit
-        treesitter     = {
-          enabled = true,
-        }
+        treesitter     = { enabled = true },
       },
     }
   })
@@ -329,5 +396,38 @@ end, {
   {
     { "n", "x" }, "<Leader>/",
     function() fzf().live_grep_native() end,
+  },
+})
+
+lz.very_lazy("gitsigns", function()
+  require("gitsigns").setup({
+    signs = {
+      add          = { text = "+" },
+      change       = { text = "~" },
+      delete       = { text = "-" },
+      topdelete    = { text = "-" },
+      changedelete = { text = "~" },
+      untracked    = { text = "?" },
+    },
+    signs_staged = {
+      add          = { text = "+" },
+      change       = { text = "~" },
+      delete       = { text = "-" },
+      topdelete    = { text = "-" },
+      changedelete = { text = "~" },
+      untracked    = { text = "?" },
+    },
+    current_line_blame = true,
+    current_line_blame_opts = {
+      delay = 250,
+    },
+  })
+end)
+
+lz.keys("neogit", nil, {
+  {
+    { "n",        "x" }, "<Leader>g",
+    "<Cmd>Neogit<CR>",
+    { expr = true },
   },
 })
