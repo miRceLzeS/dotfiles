@@ -13,7 +13,7 @@ lz.pack({
   { src = "https://github.com/stevearc/oil.nvim",           name = "oil" },
 }, function()
   -- === color scheme ===
-  require("rose-pine").setup({ styles = { transparency = false } })
+  require("rose-pine").setup({ styles = { transparency = true } })
   vim.cmd.colorscheme("rose-pine")
 
   -- === icon ===
@@ -61,9 +61,28 @@ lz.add({
 })
 
 lz.very_lazy("lualine", function()
+  local theme = require("lualine.themes.rose-pine")
+  local p = require("rose-pine.palette")
+  local config = require("rose-pine.config")
+
+  local bg_base = p.surface
+  if config.options.styles.transparency then
+    bg_base = "NONE"
+    vim.api.nvim_set_hl(0, "StatusLineTerm", {
+      fg = "NONE",
+      bg = "NONE",
+    })
+  end
+
+  theme.terminal = {
+    a = { bg = p.rose, fg = p.base, gui = "bold" },
+    b = { bg = p.overlay, fg = p.rose },
+    c = { bg = bg_base, fg = p.text },
+  }
+
   require("lualine").setup({
     options = {
-      theme = "rose-pine",
+      theme = theme,
       component_separators = "",
       section_separators = "",
       globalstatus = true,
@@ -257,35 +276,23 @@ end
 lz.keys("quicker", function()
   quicker().setup({
     keys = {
-      {
-        "<Tab>",
-        function() quicker().expand({ before = 4, after = 4 }) end,
-        desc = "Expand quickfix context"
-      },
-      {
-        "<Esc>",
-        function() quicker().collapse() end,
-        desc = "Collapse quickfix context"
-      },
+      { "<Tab>", function() quicker().expand({ before = 4, after = 4 }) end },
+      { "<Esc>", function() quicker().collapse() end },
     },
     highlight = {
       lsp = false,
     }
   })
 end, {
-  {
-    { "n", "x" }, "<Leader>l",
-    function()
-      quicker().toggle({ loclist = true })
-      vim.cmd("wincmd j")
-    end
+  { { "n", "x" }, "<Leader>l", function()
+    quicker().toggle({ loclist = true })
+    vim.cmd("wincmd j")
+  end
   },
-  {
-    { "n", "x" }, "<Leader>q",
-    function()
-      quicker().toggle()
-      vim.cmd("wincmd j")
-    end
+  { { "n", "x" }, "<Leader>q", function()
+    quicker().toggle()
+    vim.cmd("wincmd j")
+  end
   },
 })
 
@@ -344,59 +351,26 @@ lz.keys("fzf-lua", function()
     }
   })
 end, {
-  {
-    { "n", "x" },
-    "gr",
-    function() fzf().lsp_references() end,
+  { { "n", "x" }, "gd", function()
+    fzf().lsp_finder({
+      providers = {
+        { "definitions",  prefix = "def " },
+        { "declarations", prefix = "decl" },
+        { "typedefs",     prefix = "type" },
+      },
+    })
+  end,
   },
-  {
-    { "n", "x" }, "gd",
-    function()
-      fzf().lsp_finder({
-        providers = {
-          { "definitions",  prefix = "def " },
-          { "declarations", prefix = "decl" },
-          { "typedefs",     prefix = "type" },
-        },
-      })
-    end,
-  },
-  {
-    { "n", "x" }, "gi",
-    function() fzf().lsp_implementations() end,
-  },
-  {
-    { "n", "x" }, "<Leader>b",
-    function() fzf().buffers() end,
-  },
-  {
-    { "n", "x" }, "<Leader>f",
-    function() fzf().files({ cwd = "." }) end,
-  },
-  {
-    { "n", "x" }, "<Leader>F",
-    function() fzf().files({ cwd = workspace_root() }) end,
-  },
-  {
-    { "n", "x" }, "<Leader>d",
-    function() fzf().lsp_document_diagnostics() end,
-  },
-  {
-    { "n", "x" }, "<Leader>D",
-    function() fzf().lsp_workspace_diagnostics() end,
-  },
-  {
-    { "n", "x" }, "<Leader>s",
-    function() fzf().lsp_document_symbols() end,
-  },
-  {
-    { "n", "x" }, "<Leader>S",
-    function() fzf().lsp_workspace_symbols() end,
-  },
-  {
-    { "n", "x" }, "<Leader>/",
-    function() fzf().live_grep_native() end,
-  },
+  { { "n", "x" }, "gr",         function() fzf().lsp_references() end },
+  { { "n", "x" }, "gi",         function() fzf().lsp_implementations() end },
+  { { "n", "x" }, "<Leader>bb", function() fzf().buffers() end },
+  { { "n", "x" }, "<Leader>f",  function() fzf().files({ cwd = "." }) end },
+  { { "n", "x" }, "<Leader>F",  function() fzf().files({ cwd = workspace_root() }) end },
+  { { "n", "x" }, "<Leader>d",  function() fzf().lsp_document_diagnostics() end },
+  { { "n", "x" }, "<Leader>D",  function() fzf().lsp_workspace_diagnostics() end },
+  { { "n", "x" }, "<Leader>s",  function() fzf().lsp_document_symbols() end },
+  { { "n", "x" }, "<Leader>S",  function() fzf().lsp_workspace_symbols() end },
+  { { "n", "x" }, "<Leader>/",  function() fzf().live_grep_native() end },
 })
 
 lz.very_lazy("gitsigns", function()
@@ -418,16 +392,10 @@ lz.very_lazy("gitsigns", function()
       untracked    = { text = "?" },
     },
     current_line_blame = true,
-    current_line_blame_opts = {
-      delay = 250,
-    },
+    current_line_blame_opts = { delay = 250 },
   })
 end)
 
 lz.keys("neogit", nil, {
-  {
-    { "n",        "x" }, "<Leader>g",
-    "<Cmd>Neogit<CR>",
-    { expr = true },
-  },
+  { { "n", "x" }, "<Leader>g", "<Cmd>Neogit<CR>", { expr = true } },
 })

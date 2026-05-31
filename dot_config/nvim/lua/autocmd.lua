@@ -33,7 +33,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     keymap.map({ "n", "x" }, "<M-r>", lsp.buf.rename)
 
-    keymap.map({ "n", "x" }, "<Leader>h", lsp.buf.hover)
+    keymap.map({ "n", "x" }, "<Leader>ch", lsp.buf.hover)
 
     if client and client.server_capabilities.inlayHintProvider then
       keymap.map({ "n", "x" }, "<Leader>ui", function()

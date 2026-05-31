@@ -1,8 +1,8 @@
 theme = Rose Pine
 font-family = "Maple Mono NF CN"
 font-size = 20
-background-opacity = 1.0
-background-blur = false
+background-opacity = 0.8
+background-blur = true
 cursor-style-blink = false
 macos-option-as-alt = left
 shell-integration-features = ssh-terminfo,ssh-env
