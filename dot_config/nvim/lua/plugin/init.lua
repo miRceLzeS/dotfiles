@@ -261,6 +261,27 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
   })
 end)
 
+lz.very_lazy("quicker", function()
+  local quicker = require("quicker")
+  quicker.setup({
+    keys = {
+      { "<Tab>", function() quicker.expand({ before = 4, after = 4 }) end },
+      { "<Esc>", function() quicker.collapse() end },
+    },
+    highlight = {
+      lsp = false,
+    }
+  })
+  keymap.map({ "n", "x" }, "<Leader>l", function()
+    quicker.toggle({ loclist = true })
+    vim.cmd("wincmd j")
+  end)
+  keymap.map({ "n", "x" }, "<Leader>q", function()
+    quicker.toggle()
+    vim.cmd("wincmd j")
+  end)
+end)
+
 lz.event("InsertEnter", "conform", function()
   require("conform").setup({
     format_after_save = {
@@ -268,33 +289,6 @@ lz.event("InsertEnter", "conform", function()
     },
   })
 end)
-
-local function quicker()
-  return require("quicker")
-end
-
-lz.keys("quicker", function()
-  quicker().setup({
-    keys = {
-      { "<Tab>", function() quicker().expand({ before = 4, after = 4 }) end },
-      { "<Esc>", function() quicker().collapse() end },
-    },
-    highlight = {
-      lsp = false,
-    }
-  })
-end, {
-  { { "n", "x" }, "<Leader>l", function()
-    quicker().toggle({ loclist = true })
-    vim.cmd("wincmd j")
-  end
-  },
-  { { "n", "x" }, "<Leader>q", function()
-    quicker().toggle()
-    vim.cmd("wincmd j")
-  end
-  },
-})
 
 local function fzf()
   return require("fzf-lua")
