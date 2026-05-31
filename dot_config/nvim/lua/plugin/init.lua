@@ -46,17 +46,16 @@ end)
 
 -- [NOTE] loaded lazily
 lz.add({
-  { src = "https://github.com/nvim-lualine/lualine.nvim",              name = "lualine" },
-  { src = "https://github.com/mrjones2014/smart-splits.nvim",          name = "smart-splits" },
-  { src = "https://github.com/romus204/tree-sitter-manager.nvim",      name = "tree-sitter-manager" },
-  { src = "https://github.com/neovim/nvim-lspconfig",                  name = "nvim-lspconfig" },
-  { src = "https://github.com/nvim-mini/mini.pairs",                   name = "mini.pairs" },
-  { src = "https://github.com/nvim-mini/mini.surround",                name = "mini.surround" },
-  { src = "https://github.com/saghen/blink.cmp",                       name = "blink.cmp" },
-  { src = "https://github.com/stevearc/conform.nvim",                  name = "conform" },
-  { src = "https://github.com/ibhagwan/fzf-lua",                       name = "fzf-lua" },
-  { src = "https://github.com/stevearc/quicker.nvim",                  name = "quicker" },
-  { src = "https://github.com/brenton-leighton/multiple-cursors.nvim", name = "multiple-cursors" },
+  { src = "https://github.com/nvim-lualine/lualine.nvim",         name = "lualine" },
+  { src = "https://github.com/mrjones2014/smart-splits.nvim",     name = "smart-splits" },
+  { src = "https://github.com/romus204/tree-sitter-manager.nvim", name = "tree-sitter-manager" },
+  { src = "https://github.com/neovim/nvim-lspconfig",             name = "nvim-lspconfig" },
+  { src = "https://github.com/nvim-mini/mini.pairs",              name = "mini.pairs" },
+  { src = "https://github.com/nvim-mini/mini.surround",           name = "mini.surround" },
+  { src = "https://github.com/saghen/blink.cmp",                  name = "blink.cmp" },
+  { src = "https://github.com/stevearc/conform.nvim",             name = "conform" },
+  { src = "https://github.com/stevearc/quicker.nvim",             name = "quicker" },
+  { src = "https://github.com/ibhagwan/fzf-lua",                  name = "fzf-lua" },
 })
 
 lz.very_lazy("lualine", function()
@@ -181,6 +180,45 @@ lz.event("InsertEnter", "conform", function()
   })
 end)
 
+local function quicker()
+  return require("quicker")
+end
+
+lz.keys("quicker", function()
+  quicker().setup({
+    keys = {
+      {
+        "<Tab>",
+        function() quicker().expand({ before = 4, after = 4 }) end,
+        desc = "Expand quickfix context"
+      },
+      {
+        "<Esc>",
+        function() quicker().collapse() end,
+        desc = "Collapse quickfix context"
+      },
+    },
+    highlight = {
+      lsp = false,
+    }
+  })
+end, {
+  {
+    { "n", "x" }, "<Leader>l",
+    function()
+      quicker().toggle({ loclist = true })
+      vim.cmd("wincmd j")
+    end
+  },
+  {
+    { "n", "x" }, "<Leader>q",
+    function()
+      quicker().toggle()
+      vim.cmd("wincmd j")
+    end
+  },
+})
+
 local function fzf()
   return require("fzf-lua")
 end
@@ -245,8 +283,7 @@ end, {
     function() fzf().lsp_references() end,
   },
   {
-    { "n", "x" },
-    "gd",
+    { "n", "x" }, "gd",
     function()
       fzf().lsp_finder({
         providers = {
@@ -292,69 +329,5 @@ end, {
   {
     { "n", "x" }, "<Leader>/",
     function() fzf().live_grep_native() end,
-  },
-})
-
-local function quicker()
-  return require("quicker")
-end
-
-lz.keys("quicker", function()
-  quicker().setup({
-    keys = {
-      {
-        "<Tab>",
-        function() quicker().expand({ before = 4, after = 4 }) end,
-        desc = "Expand quickfix context"
-      },
-      {
-        "<Esc>",
-        function() quicker().collapse() end,
-        desc = "Collapse quickfix context"
-      },
-    },
-    highlight = {
-      lsp = false,
-    }
-  })
-end, {
-  {
-    { "n", "x" }, "<Leader>l",
-    function()
-      quicker().toggle({ loclist = true })
-      vim.cmd("wincmd j")
-    end
-  },
-  {
-    { "n", "x" }, "<Leader>q",
-    function()
-      quicker().toggle()
-      vim.cmd("wincmd j")
-    end
-  },
-})
-
-lz.keys("multiple-cursors", function()
-  require("multiple-cursors").setup()
-end, {
-  {
-    { "n",        "x", "i" }, "<M-k>",
-    "<Cmd>MultipleCursorsAddUp<CR>",
-    { expr = true },
-  },
-  {
-    { "n",        "x", "i" }, "<M-j>",
-    "<Cmd>MultipleCursorsAddDown<CR>",
-    { expr = true },
-  },
-  {
-    { "n",        "x", "i" }, "<M-h>",
-    "<Cmd>MultipleCursorsAddJumpPrevMatch<CR>",
-    { expr = true },
-  },
-  {
-    { "n",        "x", "i" }, "<M-l>",
-    "<Cmd>MultipleCursorsAddJumpNextMatch<CR>",
-    { expr = true },
   },
 })
