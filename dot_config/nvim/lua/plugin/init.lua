@@ -1,10 +1,16 @@
 local lz = require("plugin.lz")
+local keymap = require("keymap")
+
+-- [NOTE] builtin plugins
+vim.cmd.packadd("nvim.undotree")
+keymap.map("n", "<Leader>uu", "<Cmd>Undotree<CR>")
 
 -- [NOTE] loaded immediately
 lz.pack({
-  { src = "https://github.com/rose-pine/neovim", name = "rose-pine" },
+  { src = "https://github.com/rose-pine/neovim",            name = "rose-pine" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons", name = "nvim-web-devicons" },
-  { src = "https://github.com/saghen/blink.lib", name = "blink.lib" },
+  { src = "https://github.com/saghen/blink.lib",            name = "blink.lib" },
+  { src = "https://github.com/stevearc/oil.nvim",           name = "oil" },
 }, function()
   -- === color scheme ===
   require("rose-pine").setup({ styles = { transparency = false } })
@@ -12,17 +18,45 @@ lz.pack({
 
   -- === icon ===
   require("nvim-web-devicons").setup()
+
+  -- === file explorer ===
+  require("oil").setup({
+    columns = {
+      "permissions",
+      "size",
+      "mtime",
+      "icon",
+    },
+    use_default_keymaps = false,
+    keymaps = {
+      ["H"] = { "actions.parent", mode = "n" },
+      ["L"] = { "actions.select", mode = "n" },
+      ["<CR>"] = { "actions.select", mode = "n" },
+      ["<Tab>"] = { "actions.preview", mode = "n" },
+      ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
+      ["<Leader>oq"] = { "actions.close", mode = "n" },
+      ["<Leader>or"] = { "actions.refresh", mode = "n" },
+    },
+    view_options = {
+      show_hidden = true,
+    },
+  })
+  keymap.map("n", "<Leader>o", "<Cmd>Oil<CR>")
 end)
 
 -- [NOTE] loaded lazily
 lz.add({
-  { src = "https://github.com/nvim-lualine/lualine.nvim", name = "lualine" },
-  { src = "https://github.com/mrjones2014/smart-splits.nvim", name = "smart-splits" },
-  { src = "https://github.com/romus204/tree-sitter-manager.nvim", name = "tree-sitter-manager" },
-  { src = "https://github.com/neovim/nvim-lspconfig", name = "nvim-lspconfig" },
-  { src = "https://github.com/nvim-mini/mini.pairs", name = "mini.pairs" },
-  { src = "https://github.com/saghen/blink.cmp", name = "blink.cmp" },
-  { src = "https://github.com/stevearc/oil.nvim", name = "oil" },
+  { src = "https://github.com/nvim-lualine/lualine.nvim",              name = "lualine" },
+  { src = "https://github.com/mrjones2014/smart-splits.nvim",          name = "smart-splits" },
+  { src = "https://github.com/romus204/tree-sitter-manager.nvim",      name = "tree-sitter-manager" },
+  { src = "https://github.com/neovim/nvim-lspconfig",                  name = "nvim-lspconfig" },
+  { src = "https://github.com/nvim-mini/mini.pairs",                   name = "mini.pairs" },
+  { src = "https://github.com/nvim-mini/mini.surround",                name = "mini.surround" },
+  { src = "https://github.com/saghen/blink.cmp",                       name = "blink.cmp" },
+  { src = "https://github.com/stevearc/conform.nvim",                  name = "conform" },
+  { src = "https://github.com/ibhagwan/fzf-lua",                       name = "fzf-lua" },
+  { src = "https://github.com/stevearc/quicker.nvim",                  name = "quicker" },
+  { src = "https://github.com/brenton-leighton/multiple-cursors.nvim", name = "multiple-cursors" },
 })
 
 lz.very_lazy("lualine", function()
@@ -44,13 +78,25 @@ lz.very_lazy("smart-splits", function()
     ["<C-Left>"] = sp.resize_left,
     ["<C-Right>"] = sp.resize_right,
 
-    ["<C-x>k"] = function() sp.swap_buf_up() vim.cmd("wincmd k") end,
-    ["<C-x>j"] = function() sp.swap_buf_down() vim.cmd("wincmd j") end,
-    ["<C-x>h"] = function() sp.swap_buf_left() vim.cmd("wincmd h") end,
-    ["<C-x>l"] = function() sp.swap_buf_right() vim.cmd("wincmd l") end,
+    ["<C-x>k"] = function()
+      sp.swap_buf_up()
+      vim.cmd("wincmd k")
+    end,
+    ["<C-x>j"] = function()
+      sp.swap_buf_down()
+      vim.cmd("wincmd j")
+    end,
+    ["<C-x>h"] = function()
+      sp.swap_buf_left()
+      vim.cmd("wincmd h")
+    end,
+    ["<C-x>l"] = function()
+      sp.swap_buf_right()
+      vim.cmd("wincmd l")
+    end,
   }
   for lhs, rhs in pairs(mappings) do
-    require("keymap").map({ "n", "x" }, lhs, rhs)
+    keymap.map({ "n", "x" }, lhs, rhs)
   end
 end)
 
@@ -91,6 +137,10 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "mini.pairs", function()
   require("mini.pairs").setup()
 end)
 
+lz.event({ "CmdlineEnter", "InsertEnter" }, "mini.surround", function()
+  require("mini.surround").setup()
+end)
+
 lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
   local cmp = require("blink.cmp")
   cmp.build():pwait()
@@ -121,29 +171,190 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
       documentation = { auto_show = true, auto_show_delay_ms = 0 },
     }
   })
-end, { once = true })
+end)
 
-lz.very_lazy("oil", function()
-  require("oil").setup({
-    columns = {
-      "permissions",
-      "size",
-      "mtime",
-      "icon",
-    },
-    use_default_keymaps = false,
-    keymaps = {
-      ["H"] = { "actions.parent", mode = "n" },
-      ["L"] = "actions.select",
-      ["<CR>"] = "actions.select",
-      ["<Tab>"] = "actions.preview",
-      ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
-      ["<Leader>oq"] = { "actions.close", mode = "n" },
-      ["<Leader>or"] = { "actions.refresh", mode = "n" },
-    },
-    view_options = {
-      show_hidden = true,
+lz.event("InsertEnter", "conform", function()
+  require("conform").setup({
+    format_after_save = {
+      lsp_format = "fallback",
     },
   })
-  require("keymap").map("n", "<Leader>o", "<Cmd>Oil<CR>")
 end)
+
+local function fzf()
+  return require("fzf-lua")
+end
+
+local function workspace_root()
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+    if client.config and client.config.root_dir and client.config.root_dir ~= "" then
+      return client.config.root_dir
+    end
+  end
+  return vim.fn.getcwd()
+end
+
+lz.keys("fzf-lua", function()
+  fzf().setup({
+    winopts    = {
+      width   = 0.8,
+      height  = 0.9,
+      preview = {
+        hidden       = false,
+        vertical     = "up:50%",
+        horizontal   = "right:50%",
+        layout       = "flex",
+        flip_columns = 64,
+        delay        = 10,
+        winopts      = { number = false },
+      },
+    },
+    keymap     = {
+      builtin = {
+        true,
+        ["<C-d>"] = "preview-page-down",
+        ["<C-u>"] = "preview-page-up",
+      },
+      fzf = {
+        true,
+        ["ctrl-d"] = "preview-page-down",
+        ["ctrl-u"] = "preview-page-up",
+        ["ctrl-a"] = "select-all+accept",
+      },
+    },
+    fzf_opts   = {
+      ["--layout"] = "reverse-list",
+      ["--cycle"] = true,
+    },
+    previewers = {
+      builtin = {
+        syntax         = true,
+        syntax_limit_l = 0,                -- syntax limit (lines), 0=nolimit
+        syntax_limit_b = 0,                -- syntax limit (bytes), 0=nolimit
+        limit_b        = 1024 * 1024 * 10, -- preview limit (bytes), 0=nolimit
+        treesitter     = {
+          enabled = true,
+        }
+      },
+    }
+  })
+end, {
+  {
+    { "n", "x" },
+    "gr",
+    function() fzf().lsp_references() end,
+  },
+  {
+    { "n", "x" },
+    "gd",
+    function()
+      fzf().lsp_finder({
+        providers = {
+          { "definitions",  prefix = "def " },
+          { "declarations", prefix = "decl" },
+          { "typedefs",     prefix = "type" },
+        },
+      })
+    end,
+  },
+  {
+    { "n", "x" }, "gi",
+    function() fzf().lsp_implementations() end,
+  },
+  {
+    { "n", "x" }, "<Leader>b",
+    function() fzf().buffers() end,
+  },
+  {
+    { "n", "x" }, "<Leader>f",
+    function() fzf().files({ cwd = "." }) end,
+  },
+  {
+    { "n", "x" }, "<Leader>F",
+    function() fzf().files({ cwd = workspace_root() }) end,
+  },
+  {
+    { "n", "x" }, "<Leader>d",
+    function() fzf().lsp_document_diagnostics() end,
+  },
+  {
+    { "n", "x" }, "<Leader>D",
+    function() fzf().lsp_workspace_diagnostics() end,
+  },
+  {
+    { "n", "x" }, "<Leader>s",
+    function() fzf().lsp_document_symbols() end,
+  },
+  {
+    { "n", "x" }, "<Leader>S",
+    function() fzf().lsp_workspace_symbols() end,
+  },
+  {
+    { "n", "x" }, "<Leader>/",
+    function() fzf().live_grep_native() end,
+  },
+})
+
+local function quicker()
+  return require("quicker")
+end
+
+lz.keys("quicker", function()
+  quicker().setup({
+    keys = {
+      {
+        "<Tab>",
+        function() quicker().expand({ before = 4, after = 4 }) end,
+        desc = "Expand quickfix context"
+      },
+      {
+        "<Esc>",
+        function() quicker().collapse() end,
+        desc = "Collapse quickfix context"
+      },
+    },
+    highlight = {
+      lsp = false,
+    }
+  })
+end, {
+  {
+    { "n", "x" }, "<Leader>l",
+    function()
+      quicker().toggle({ loclist = true })
+      vim.cmd("wincmd j")
+    end
+  },
+  {
+    { "n", "x" }, "<Leader>q",
+    function()
+      quicker().toggle()
+      vim.cmd("wincmd j")
+    end
+  },
+})
+
+lz.keys("multiple-cursors", function()
+  require("multiple-cursors").setup()
+end, {
+  {
+    { "n",        "x", "i" }, "<M-k>",
+    "<Cmd>MultipleCursorsAddUp<CR>",
+    { expr = true },
+  },
+  {
+    { "n",        "x", "i" }, "<M-j>",
+    "<Cmd>MultipleCursorsAddDown<CR>",
+    { expr = true },
+  },
+  {
+    { "n",        "x", "i" }, "<M-h>",
+    "<Cmd>MultipleCursorsAddJumpPrevMatch<CR>",
+    { expr = true },
+  },
+  {
+    { "n",        "x", "i" }, "<M-l>",
+    "<Cmd>MultipleCursorsAddJumpNextMatch<CR>",
+    { expr = true },
+  },
+})

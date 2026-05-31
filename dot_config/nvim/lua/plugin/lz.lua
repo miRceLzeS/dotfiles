@@ -56,19 +56,23 @@ function M.event(events, name, config, opts)
   })
 end
 
-function M.key(name, config, lhs, rhs, opts)
-  opts = opts or {}
+function M.keys(name, config, opts)
+  for _, opt in ipairs(opts) do
+    local mode = opt[1]
+    local lhs = opt[2]
+    local rhs = opt[3]
+    local map_opts = opt[4] or {}
 
-  local mode = opts.mode or "n"
-  opts.mode = nil
+    require("keymap").map(mode, lhs, function()
+      M.load(name, config)
 
-  vim.keymap.set(mode, lhs, function()
-    M.load(name, config)
-
-    if rhs then
-      return rhs()
-    end
-  end, opts)
+      if type(rhs) == "string" then
+        return rhs
+      elseif type(rhs) == "function" then
+        return rhs()
+      end
+    end, map_opts)
+  end
 end
 
 vim.api.nvim_create_autocmd("VimEnter", {
@@ -85,4 +89,3 @@ vim.api.nvim_create_autocmd("VimEnter", {
 })
 
 return M
-

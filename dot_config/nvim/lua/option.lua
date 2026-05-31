@@ -28,7 +28,7 @@ opt.linebreak = true -- line will break at suitable character if true opt.breaki
 opt.showbreak = "≪ "
 
 opt.cursorline = true
-opt.colorcolumn = "64"
+opt.colorcolumn = "100"
 
 opt.expandtab = true         -- number of spaces will be inserted replacing a tab
 local tab_spaces = 2

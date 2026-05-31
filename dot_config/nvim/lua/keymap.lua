@@ -45,15 +45,15 @@ M.map("o", "n", "'Nn'[v:searchforward]", { expr = true })
 M.map("o", "N", "'nN'[v:searchforward]", { expr = true })
 
 -- === text ===
-M.map("n", "<M-k>", "<Cmd>m .-2<CR>==")
-M.map("n", "<M-j>", "<Cmd>m .+1<CR>==")
-M.map("x", "<M-k>", ":m '<-2<CR>gv=gv")
-M.map("x", "<M-j>", ":m '>+1<CR>gv=gv")
-M.map("i", "<M-k>", "<Esc><Cmd>m .-2<CR>==gi")
-M.map("i", "<M-j>", "<Esc><Cmd>m .+1<CR>==gi")
+M.map("n", "<M-Up>", "<Cmd>m .-2<CR>==")
+M.map("n", "<M-Down>", "<Cmd>m .+1<CR>==")
+M.map("x", "<M-Up>", ":m '<-2<CR>gv=gv")
+M.map("x", "<M-Down>", ":m '>+1<CR>gv=gv")
+M.map("i", "<M-Up>", "<Esc><Cmd>m .-2<CR>==gi")
+M.map("i", "<M-Down>", "<Esc><Cmd>m .+1<CR>==gi")
 
-M.map("x", "<", "<gv")
-M.map("x", ">", ">gv")
+M.map("x", "<M-Left>", "<gv")
+M.map("x", "<M-Right>", ">gv")
 
 M.map({ "n", "x", "i" }, "<M-d>", "mzyyp`zj", { desc = "Duplicate current line" })
 
@@ -62,7 +62,6 @@ M.map("v", "<Leader>y", '"+y')
 -- [NOTE] operations over neovim elements
 -- === window ===
 M.map("n", "<C-p>", "<Cmd>wincmd p<CR>")
-
 M.map("n", "<C-n>k", "<Cmd>aboveleft split<CR>")
 M.map("n", "<C-n>j", "<Cmd>split<CR>")
 M.map("n", "<C-n>h", "<Cmd>leftabove vsplit<CR>")
