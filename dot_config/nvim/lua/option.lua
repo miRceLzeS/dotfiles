@@ -52,6 +52,15 @@ opt.swapfile = false
 opt.timeoutlen = 500
 opt.undofile = true
 opt.updatetime = 250
+opt.path:append("**")
+
+-- === diagnostic ===
+vim.diagnostic.config({ severity_sort = true })
+
+-- === external ===
+if vim.fn.executable("rg") then
+  vim.opt.grepprg = "rg --vimgrep --smart-case"
+end
 
 -- === misc ===
 opt.iskeyword:remove({ "_", "-", "." })

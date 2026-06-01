@@ -33,9 +33,9 @@ lz.pack({
       ["L"] = { "actions.select", mode = "n" },
       ["<CR>"] = { "actions.select", mode = "n" },
       ["<Tab>"] = { "actions.preview", mode = "n" },
-      ["<Leader>o."] = { "actions.open_cwd", mode = "n" },
-      ["<Leader>oq"] = { "actions.close", mode = "n" },
-      ["<Leader>or"] = { "actions.refresh", mode = "n" },
+      ["."] = { "actions.open_cwd", mode = "n" },
+      ["q"] = { "actions.close", mode = "n" },
+      ["<Leader>r"] = { "actions.refresh", mode = "n" },
     },
     view_options = {
       show_hidden = true,
@@ -55,7 +55,6 @@ lz.add({
   { src = "https://github.com/saghen/blink.cmp",                  name = "blink.cmp" },
   { src = "https://github.com/stevearc/conform.nvim",             name = "conform" },
   { src = "https://github.com/stevearc/quicker.nvim",             name = "quicker" },
-  { src = "https://github.com/ibhagwan/fzf-lua",                  name = "fzf-lua" },
   { src = "https://github.com/lewis6991/gitsigns.nvim",           name = "gitsigns" },
   { src = "https://github.com/neogitorg/neogit",                  name = "neogit" },
 })
@@ -238,7 +237,7 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
       ["<C-n>"] = { "select_next", "fallback" },
       ["<C-p>"] = { "select_prev", "fallback" },
       ["<Tab>"] = { "select_next", "fallback" },
-      ["<Shift><Tab>"] = { "select_prev", "fallback" },
+      ["<S-Tab>"] = { "select_prev", "fallback" },
       ["<Enter>"] = { "accept", "fallback" },
       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
       ["<C-d>"] = { "scroll_documentation_down", "fallback" },
@@ -246,6 +245,7 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
     cmdline = {
       keymap = {
         preset = "inherit",
+        ["<Tab>"] = { "show", "select_next", "fallback" },
         ["<Enter>"] = { "fallback" },
       },
       completion = {
@@ -265,107 +265,17 @@ lz.very_lazy("quicker", function()
   local quicker = require("quicker")
   quicker.setup({
     keys = {
-      { "<Tab>", function() quicker.expand({ before = 4, after = 4 }) end },
-      { "<Esc>", function() quicker.collapse() end },
+      { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end },
     },
-    highlight = {
-      lsp = false,
-    }
+    highlight = { lsp = false },
   })
-  keymap.map({ "n", "x" }, "<Leader>l", function()
-    quicker.toggle({ loclist = true })
-    vim.cmd("wincmd j")
-  end)
-  keymap.map({ "n", "x" }, "<Leader>q", function()
-    quicker.toggle()
-    vim.cmd("wincmd j")
-  end)
+  keymap.map({ "n", "x" }, "<Leader>l", function() quicker.toggle({ loclist = true }) end)
+  keymap.map({ "n", "x" }, "<Leader>q", function() quicker.toggle() end)
 end)
 
 lz.event("InsertEnter", "conform", function()
-  require("conform").setup({
-    format_after_save = {
-      lsp_format = "fallback",
-    },
-  })
+  require("conform").setup({ format_after_save = { lsp_format = "fallback" } })
 end)
-
-local function fzf()
-  return require("fzf-lua")
-end
-
-local function workspace_root()
-  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-    if client.config and client.config.root_dir and client.config.root_dir ~= "" then
-      return client.config.root_dir
-    end
-  end
-  return vim.fn.getcwd()
-end
-
-lz.keys("fzf-lua", function()
-  fzf().setup({
-    winopts    = {
-      width   = 0.8,
-      height  = 0.9,
-      preview = {
-        hidden       = false,
-        vertical     = "up:50%",
-        horizontal   = "right:50%",
-        layout       = "flex",
-        flip_columns = 64,
-        delay        = 10,
-        winopts      = { number = false },
-      },
-    },
-    keymap     = {
-      builtin = {
-        true,
-        ["<C-d>"] = "preview-page-down",
-        ["<C-u>"] = "preview-page-up",
-      },
-      fzf = {
-        true,
-        ["ctrl-d"] = "preview-page-down",
-        ["ctrl-u"] = "preview-page-up",
-      },
-    },
-    fzf_opts   = {
-      ["--layout"] = "reverse-list",
-      ["--cycle"] = true,
-    },
-    previewers = {
-      builtin = {
-        syntax         = true,
-        syntax_limit_l = 0,                -- syntax limit (lines), 0=nolimit
-        syntax_limit_b = 0,                -- syntax limit (bytes), 0=nolimit
-        limit_b        = 1024 * 1024 * 10, -- preview limit (bytes), 0=nolimit
-        treesitter     = { enabled = true },
-      },
-    }
-  })
-end, {
-  { { "n", "x" }, "gd", function()
-    fzf().lsp_finder({
-      providers = {
-        { "definitions",  prefix = "def " },
-        { "declarations", prefix = "decl" },
-        { "typedefs",     prefix = "type" },
-      },
-    })
-  end,
-  },
-  { { "n", "x" }, "gr",         function() fzf().lsp_references() end },
-  { { "n", "x" }, "gi",         function() fzf().lsp_implementations() end },
-  { { "n", "x" }, "<Leader>bb", function() fzf().buffers() end },
-  { { "n", "x" }, "<Leader>f",  function() fzf().files({ cwd = "." }) end },
-  { { "n", "x" }, "<Leader>F",  function() fzf().files({ cwd = workspace_root() }) end },
-  { { "n", "x" }, "<Leader>d",  function() fzf().lsp_document_diagnostics() end },
-  { { "n", "x" }, "<Leader>D",  function() fzf().lsp_workspace_diagnostics() end },
-  { { "n", "x" }, "<Leader>s",  function() fzf().lsp_document_symbols() end },
-  { { "n", "x" }, "<Leader>S",  function() fzf().lsp_workspace_symbols() end },
-  { { "n", "x" }, "<Leader>/",  function() fzf().live_grep_native() end },
-})
 
 lz.very_lazy("gitsigns", function()
   require("gitsigns").setup({
