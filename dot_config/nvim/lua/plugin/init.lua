@@ -87,7 +87,7 @@ lz.very_lazy("lualine", function()
       globalstatus = true,
     },
     sections = {
-      lualine_a = { "mode" },
+      lualine_a = { "buffers" },
       lualine_b = {
         {
           "branch",
@@ -116,25 +116,6 @@ lz.very_lazy("lualine", function()
       },
       lualine_c = {
         {
-          "filetype",
-          icon_only = true,
-          colored = true,
-          seperator = "",
-          padding = { left = 1, right = 0 },
-        },
-        {
-          "filename",
-          path = 0,
-          seperator = "",
-          padding = { left = 0, right = 0 },
-          symbols = {
-            modified = "●",
-            readonly = "󰌾",
-          },
-        },
-      },
-      lualine_x = {
-        {
           "diagnostics",
           symbols = {
             error = "󰅚 ",
@@ -143,6 +124,14 @@ lz.very_lazy("lualine", function()
             hint = "󰌶 ",
           },
         },
+      },
+      lualine_x = {
+        {
+          function() return "" end,
+          cond = function() return vim.bo.readonly or not vim.bo.modifiable end,
+        },
+        "encoding",
+        "fileformat",
       },
       lualine_y = { "progress" },
       lualine_z = { "location" },
