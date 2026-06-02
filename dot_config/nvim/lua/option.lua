@@ -52,7 +52,6 @@ opt.swapfile = false
 opt.timeoutlen = 500
 opt.undofile = true
 opt.updatetime = 250
-opt.path:append("**")
 
 -- === diagnostic ===
 vim.diagnostic.config({ severity_sort = true })

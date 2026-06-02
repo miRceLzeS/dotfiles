@@ -5,6 +5,9 @@ local keymap = require("keymap")
 vim.cmd.packadd("nvim.undotree")
 keymap.map("n", "<Leader>uu", "<Cmd>Undotree<CR>")
 
+-- [NOTE] custom plugins
+require("plugin.fd").setup()
+
 -- [NOTE] loaded immediately
 lz.pack({
   { src = "https://github.com/rose-pine/neovim",            name = "rose-pine" },
