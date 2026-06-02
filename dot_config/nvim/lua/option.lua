@@ -57,9 +57,11 @@ opt.updatetime = 250
 vim.diagnostic.config({ severity_sort = true })
 
 -- === external ===
-if vim.fn.executable("rg") then
+if vim.fn.executable("rg") == 1 then
   vim.opt.grepprg = "rg --vimgrep --smart-case"
 end
+
+opt.path = { "." }
 
 -- === misc ===
 opt.iskeyword:remove({ "_", "-", "." })

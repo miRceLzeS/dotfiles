@@ -105,24 +105,6 @@ M.map({ "n", "x" }, "<Leader>D", function()
 end)
 
 -- === search ===
-M.map({ "n", "x" }, "<Leader>f", ":find ", { silent = false })
-M.map({ "n", "x" }, "<Leader>F", function()
-  local root = vim.fn.getcwd()
-  for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
-    if client.config and client.config.root_dir and client.config.root_dir ~= "" then
-      root = client.config.root_dir
-      break
-    end
-  end
-
-  root = vim.fs.normalize(root)
-  root = vim.fn.fnameescape(root)
-
-  vim.api.nvim_feedkeys(
-    vim.api.nvim_replace_termcodes(":find " .. root .. "/", true, false, true), "n", false
-  )
-end, { silent = false })
-
 local function search_symbol(range)
   local hint = range == 0 and "(buffer)" or "(workspace)"
   vim.ui.input({ prompt = "Symbol " .. hint .. "  " }, function(query)

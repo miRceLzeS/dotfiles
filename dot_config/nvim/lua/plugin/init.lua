@@ -1,4 +1,3 @@
-local lz = require("plugin.lz")
 local keymap = require("keymap")
 
 -- [NOTE] builtin plugins
@@ -6,7 +5,15 @@ vim.cmd.packadd("nvim.undotree")
 keymap.map("n", "<Leader>uu", "<Cmd>Undotree<CR>")
 
 -- [NOTE] custom plugins
-require("plugin.fd").setup()
+-- === lazy wrapper ===
+local lz = require("plugin.lz")
+
+-- === fdprg ===
+local fdprg = require("plugin.findprg")
+fdprg.setup()
+
+keymap.map({ "n", "x" }, "<Leader>f", fdprg.fd_find_cwd, { silent = false })
+keymap.map({ "n", "x" }, "<Leader>F", fdprg.fd_find_root, { silent = false })
 
 -- [NOTE] loaded immediately
 lz.pack({
