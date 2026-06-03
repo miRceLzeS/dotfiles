@@ -110,7 +110,7 @@ local function search_symbol(range)
   vim.ui.input({ prompt = "Symbol " .. hint .. "  " }, function(query)
     if query == nil or query == "" then return end
 
-    local grep = "silent grep! -w " .. vim.fn.shellescape(query)
+    local grep = "silent grep! " .. vim.fn.shellescape(query)
     if range == 0 then
       local filename = vim.fn.expand("%:p")
       if filename == "" then return end

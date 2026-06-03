@@ -56,17 +56,18 @@ end)
 
 -- [NOTE] loaded lazily
 lz.add({
-  { src = "https://github.com/nvim-lualine/lualine.nvim",         name = "lualine" },
-  { src = "https://github.com/mrjones2014/smart-splits.nvim",     name = "smart-splits" },
-  { src = "https://github.com/romus204/tree-sitter-manager.nvim", name = "tree-sitter-manager" },
-  { src = "https://github.com/neovim/nvim-lspconfig",             name = "nvim-lspconfig" },
-  { src = "https://github.com/nvim-mini/mini.pairs",              name = "mini.pairs" },
-  { src = "https://github.com/nvim-mini/mini.surround",           name = "mini.surround" },
-  { src = "https://github.com/saghen/blink.cmp",                  name = "blink.cmp" },
-  { src = "https://github.com/stevearc/conform.nvim",             name = "conform" },
-  { src = "https://github.com/stevearc/quicker.nvim",             name = "quicker" },
-  { src = "https://github.com/lewis6991/gitsigns.nvim",           name = "gitsigns" },
-  { src = "https://github.com/neogitorg/neogit",                  name = "neogit" },
+  { src = "https://github.com/nvim-lualine/lualine.nvim",                 name = "lualine" },
+  { src = "https://github.com/mrjones2014/smart-splits.nvim",             name = "smart-splits" },
+  { src = "https://github.com/romus204/tree-sitter-manager.nvim",         name = "tree-sitter-manager" },
+  { src = "https://github.com/neovim/nvim-lspconfig",                     name = "nvim-lspconfig" },
+  { src = "https://github.com/nvim-mini/mini.pairs",                      name = "mini.pairs" },
+  { src = "https://github.com/nvim-mini/mini.surround",                   name = "mini.surround" },
+  { src = "https://github.com/saghen/blink.cmp",                          name = "blink.cmp" },
+  { src = "https://github.com/stevearc/conform.nvim",                     name = "conform" },
+  { src = "https://github.com/stevearc/quicker.nvim",                     name = "quicker" },
+  { src = "https://github.com/lewis6991/gitsigns.nvim",                   name = "gitsigns" },
+  { src = "https://github.com/neogitorg/neogit",                          name = "neogit" },
+  { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", name = "render-markdown" },
 })
 
 lz.very_lazy("lualine", function()
@@ -302,3 +303,7 @@ end)
 lz.keys("neogit", nil, {
   { { "n", "x" }, "<Leader>g", "<Cmd>Neogit<CR>", { expr = true } },
 })
+
+lz.very_lazy("render-markdown", function()
+  require("render-markdown").setup({ completions = { lsp = { enabled = true } } })
+end)

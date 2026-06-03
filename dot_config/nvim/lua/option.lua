@@ -61,7 +61,5 @@ if vim.fn.executable("rg") == 1 then
   vim.opt.grepprg = "rg --vimgrep --smart-case"
 end
 
-opt.path = { "." }
-
 -- === misc ===
-opt.iskeyword:remove({ "_", "-", "." })
+-- opt.iskeyword:remove({ "_", "-", ".", "@" })

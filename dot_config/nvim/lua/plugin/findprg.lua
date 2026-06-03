@@ -9,19 +9,15 @@ function M.fd_findfunc(cmdarg, cmdcomplete)
     end
   end
 
-  local root = start_dir or vim.fn.cwd()
-
   local cmd = {
     "fd",
-    "--glob",
     "--type", "file",
     "--color", "never",
-    "--search-path", root,
+    "--search-path", start_dir,
     "--exclude", ".git",
     "--exclude", "target",
+    "--glob", "*",
   }
-
-  table.insert(cmd, cmdarg ~= nil and cmdarg ~= "" and cmdarg or "*")
 
   local results = vim.system(cmd, { text = true, stderr = false }):wait(3000)
   if results.code ~= 0 or not results.stdout then
