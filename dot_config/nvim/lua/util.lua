@@ -10,41 +10,31 @@ function M.getroot()
     end
   end
 
-  return vim.fs.normalize(vim.fn.fnameescape(root))
+  return root
 end
 
 function M.rel_to_pwd(path)
-  local target = vim.fs.normalize(path)
-  local base = vim.fs.normalize(vim.fn.getcwd())
+  local target = vim.fs.normalize(vim.fs.abspath(path))
+  local base = vim.fs.normalize(vim.fs.abspath(vim.fn.getcwd()))
 
   local rel = vim.fs.relpath(base, target)
   if rel then
     return rel == "" and "." or rel
   end
 
-  local parent = base
-  local ups = {}
+  local up = ".."
 
-  while true do
-    local next_parent = vim.fs.dirname(parent)
-
-    if next_parent == parent then
-      return target
-    end
-
-    parent = next_parent
-    table.insert(ups, "..")
-
+  for parent in vim.fs.parents(base) do
     rel = vim.fs.relpath(parent, target)
-    if rel then
-      if rel == "" or rel == "." then
-        return table.concat(ups, "/")
-      end
 
-      table.insert(ups, rel)
-      return table.concat(ups, "/")
+    if rel then
+      return rel == "" and up or vim.fs.joinpath(up, rel)
     end
+
+    up = up .. "/.."
   end
+
+  return target
 end
 
 return M
