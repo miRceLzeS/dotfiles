@@ -47,9 +47,7 @@ lz.pack({
       ["q"] = { "actions.close", mode = "n" },
       ["<Leader>r"] = { "actions.refresh", mode = "n" },
     },
-    view_options = {
-      show_hidden = true,
-    },
+    view_options = { show_hidden = true },
   })
   keymap.map("n", "<Leader>o", "<Cmd>Oil<CR>")
 end)
@@ -68,6 +66,7 @@ lz.add({
   { src = "https://github.com/lewis6991/gitsigns.nvim",                   name = "gitsigns" },
   { src = "https://github.com/neogitorg/neogit",                          name = "neogit" },
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", name = "render-markdown" },
+  { src = "https://github.com/jake-stewart/multicursor.nvim",             name = "multicursor-nvim" },
 })
 
 lz.very_lazy("lualine", function()
@@ -78,10 +77,7 @@ lz.very_lazy("lualine", function()
   local bg_base = p.surface
   if config.options.styles.transparency then
     bg_base = "NONE"
-    vim.api.nvim_set_hl(0, "StatusLineTerm", {
-      fg = "NONE",
-      bg = "NONE",
-    })
+    vim.api.nvim_set_hl(0, "StatusLineTerm", { fg = "NONE", bg = "NONE" })
   end
 
   theme.terminal = {
@@ -98,7 +94,7 @@ lz.very_lazy("lualine", function()
       globalstatus = true,
     },
     sections = {
-      lualine_a = { "buffers" },
+      lualine_a = { "mode" },
       lualine_b = {
         {
           "branch",
@@ -124,8 +120,6 @@ lz.very_lazy("lualine", function()
             removed = "-",
           },
         },
-      },
-      lualine_c = {
         {
           "diagnostics",
           symbols = {
@@ -136,6 +130,7 @@ lz.very_lazy("lualine", function()
           },
         },
       },
+      lualine_c = { "buffers" },
       lualine_x = {
         {
           function() return "" end,
@@ -264,9 +259,7 @@ end)
 lz.very_lazy("quicker", function()
   local quicker = require("quicker")
   quicker.setup({
-    keys = {
-      { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end },
-    },
+    keys = { { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end } },
     highlight = { lsp = false },
   })
   keymap.map({ "n", "x" }, "<Leader>l", function() quicker.toggle({ loclist = true }) end)
@@ -307,3 +300,29 @@ lz.keys("neogit", nil, {
 lz.very_lazy("render-markdown", function()
   require("render-markdown").setup({ completions = { lsp = { enabled = true } } })
 end)
+
+local mc = function()
+  return require("multicursor-nvim")
+end
+
+lz.keys("multicursor-nvim", function()
+  mc().setup()
+  mc().addKeymapLayer(function(layerset)
+    layerset({ "n" }, "<Esc>", function()
+      if not mc().cursorsEnabled() then
+        mc().enableCursors()
+      else
+        mc().clearCursors()
+      end
+    end)
+  end)
+end, {
+  { { "n", "x", "i" }, "<M-k>", function() mc().lineAddCursor(-1) end },
+  { { "n", "x", "i" }, "<M-j>", function() mc().lineAddCursor(1) end },
+  { { "n", "x", "i" }, "<M-p>", function() mc().matchAddCursor(-1) end },
+  { { "n", "x", "i" }, "<M-n>", function() mc().matchAddCursor(1) end },
+  { { "n", "x", "i" }, "<M-a>", function() mc().matchAllAddCursors() end },
+  { { "n" },           "<M-|>", function() mc().alignCursors() end },
+  { { "x" },           "I",     function() mc().insertVisual() end },
+  { { "x" },           "A",     function() mc().appendVisual() end },
+})
