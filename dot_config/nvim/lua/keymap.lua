@@ -49,7 +49,7 @@ M.map("x", "N", "'nN'[v:searchforward]", { expr = true })
 M.map("o", "n", "'Nn'[v:searchforward]", { expr = true })
 M.map("o", "N", "'nN'[v:searchforward]", { expr = true })
 
--- === text ===
+-- === editing ===
 M.map("n", "<M-Up>", "<Cmd>m .-2<CR>==")
 M.map("n", "<M-Down>", "<Cmd>m .+1<CR>==")
 M.map("x", "<M-Up>", ":m '<-2<CR>gv=gv")
@@ -63,6 +63,10 @@ M.map({ "n", "x" }, "<M-Right>", ">gv")
 M.map({ "n", "x", "i" }, "<M-d>", "mzyyp`zj", { desc = "Duplicate current line" })
 
 M.map("v", "<Leader>y", '"+y')
+
+M.map({ "n", "x" }, "X", "x")
+M.map("n", "x", "V")
+M.map("x", "x", "gj")
 
 -- [NOTE] operations over neovim elements
 -- === window ===
@@ -91,39 +95,12 @@ M.map({ "n", "x" }, "<Leader><Tab>o", "<Cmd>tabonly<CR>")
 M.map({ "n", "x" }, "<Leader>ud", vim.diagnostic.open_float)
 
 M.map({ "n", "x" }, "<Leader>d", function()
-  vim.diagnostic.setloclist({
-    open = true,
-    title = "Local Diagnostics",
-  })
+  vim.diagnostic.setloclist({ open = true, title = "Local Diagnostics" })
 end)
 
 M.map({ "n", "x" }, "<Leader>D", function()
-  vim.diagnostic.setqflist({
-    open = true,
-    title = "Workspace Diagnostics",
-  })
+  vim.diagnostic.setqflist({ open = true, title = "Workspace Diagnostics" })
 end)
-
--- === search ===
-local function search_symbol(range)
-  local hint = range == 0 and "(buffer)" or "(workspace)"
-  vim.ui.input({ prompt = "Symbol " .. hint .. "  " }, function(query)
-    if query == nil or query == "" then return end
-
-    local grep = "silent grep! " .. vim.fn.shellescape(query)
-    if range == 0 then
-      local filename = vim.fn.expand("%:p")
-      if filename == "" then return end
-
-      grep = grep .. " " .. vim.fn.shellescape(filename)
-    end
-
-    vim.cmd(grep .. " | copen")
-  end)
-end
-
-M.map({ "n", "x" }, "<Leader>s", function() search_symbol(0) end)
-M.map({ "n", "x" }, "<Leader>S", function() search_symbol(1) end)
 
 -- === plugin ===
 M.map({ "n" }, "<Leader>pu", vim.pack.update)

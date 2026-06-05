@@ -31,28 +31,39 @@ vim.api.nvim_create_autocmd("LspAttach", {
     keymap.del({ "i" }, "<C-s>")
     keymap.del({ "n" }, "K", { buf = ev.buf })
 
-    local on_list = function(opts)
-      vim.fn.setqflist({}, " ", opts)
+    local on_list = function(title, loclist)
+      return function(opts)
+        opts.title = title or ""
+        if loclist then
+          vim.fn.setloclist(0, {}, " ", opts)
+          vim.cmd("lopen")
+        else
+          vim.fn.setqflist({}, " ", opts)
+          vim.cmd("copen")
+        end
+      end
     end
     keymap.map({ "n", "x" }, "gr", function()
-      lsp.buf.references(nil, { on_list = on_list })
-      vim.cmd("copen")
+      lsp.buf.references(nil, { on_list = on_list("references", false) })
     end)
     keymap.map({ "n", "x" }, "gd", function()
-      lsp.buf.definition({ on_list = on_list })
-      vim.cmd("copen")
+      lsp.buf.definition({ on_list = on_list("definitions", false) })
     end)
     keymap.map({ "n", "x" }, "gD", function()
-      lsp.buf.declaration({ on_list = on_list })
-      vim.cmd("copen")
+      lsp.buf.declaration({ on_list = on_list("declarations", false) })
     end)
     keymap.map({ "n", "x" }, "gt", function()
-      lsp.buf.type_definition({ on_list = on_list })
-      vim.cmd("copen")
+      lsp.buf.type_definition({ on_list = on_list("type definitions", false) })
     end)
     keymap.map({ "n", "x" }, "gi", function()
-      lsp.buf.implementation({ on_list = on_list })
-      vim.cmd("copen")
+      lsp.buf.implementation({ on_list = on_list("implementations", false) })
+    end)
+
+    keymap.map({ "n", "x" }, "<Leader>s", function()
+      vim.lsp.buf.document_symbol({ loclist = true, on_list = on_list("document symbols", true) })
+    end)
+    keymap.map({ "n", "x" }, "<Leader>S", function()
+      vim.lsp.buf.workspace_symbol("", { loclist = false, on_list = on_list("workspace symbols", false) })
     end)
 
     keymap.map({ "n", "x" }, "<M-r>", lsp.buf.rename)

@@ -62,4 +62,4 @@ if vim.fn.executable("rg") == 1 then
 end
 
 -- === misc ===
-opt.iskeyword:append({ "." })
+opt.iskeyword:remove({ "." })
