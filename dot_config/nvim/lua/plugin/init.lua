@@ -262,8 +262,6 @@ lz.very_lazy("quicker", function()
     keys = { { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end } },
     highlight = { lsp = false },
   })
-  keymap.map({ "n", "x" }, "<Leader>l", function() quicker.toggle({ loclist = true }) end)
-  keymap.map({ "n", "x" }, "<Leader>q", function() quicker.toggle() end)
 end)
 
 lz.event("InsertEnter", "conform", function()

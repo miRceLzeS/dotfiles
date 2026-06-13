@@ -77,6 +77,8 @@ M.map("n", "<C-s>h", "<Cmd>leftabove vsplit<CR>")
 M.map("n", "<C-s>l", "<Cmd>rightbelow vsplit<CR>")
 
 -- === buffer ===
+M.map({ "n", "x" }, "<Leader>bb", ":buffer ", { silent = false })
+
 M.map({ "n", "x" }, "<Leader>bn", "<Cmd>enew<CR>")
 M.map({ "n", "x" }, "<Leader>bd", "<Cmd>bdelete<CR>")
 
@@ -101,6 +103,10 @@ end)
 M.map({ "n", "x" }, "<Leader>D", function()
   vim.diagnostic.setqflist({ open = true, title = "Workspace Diagnostics" })
 end)
+
+-- == quickfix list ===
+M.map({ "n", "x" }, "<Leader>l", "<Cmd>lopen<CR>")
+M.map({ "n", "x" }, "<Leader>q", "<Cmd>copen<CR>")
 
 -- === plugin ===
 M.map({ "n" }, "<Leader>pu", vim.pack.update)

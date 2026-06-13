@@ -1,3 +1,5 @@
+local keymap = require("keymap")
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
     vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
@@ -14,7 +16,6 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local lsp = vim.lsp
-    local keymap = require("keymap")
 
     local client = lsp.get_client_by_id(ev.data.client_id)
     if client then
@@ -90,4 +91,17 @@ vim.api.nvim_create_autocmd("BufReadPost", {
       pcall(vim.api.nvim_win_set_cursor, 0, mark)
     end
   end,
+})
+
+vim.api.nvim_create_autocmd("WinLeave", {
+  callback = function(ev)
+    if vim.bo[ev.buf].buftype ~= "quickfix" then
+      return
+    end
+
+    local winid = vim.fn.win_getid()
+    vim.schedule(function()
+      pcall(vim.api.nvim_win_close, winid, true)
+    end)
+  end
 })
