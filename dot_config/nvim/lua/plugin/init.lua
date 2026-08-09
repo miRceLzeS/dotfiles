@@ -8,13 +8,6 @@ keymap.map("n", "<Leader>uu", "<Cmd>Undotree<CR>")
 -- === lazy wrapper ===
 local lz = require("plugin.lz")
 
--- === fdprg ===
-local fdprg = require("plugin.findprg")
-fdprg.setup()
-
-keymap.map({ "n", "x" }, "<Leader>f", fdprg.fd_find_cwd, { silent = false })
-keymap.map({ "n", "x" }, "<Leader>F", fdprg.fd_find_root, { silent = false })
-
 -- [NOTE] loaded immediately
 lz.pack({
   { src = "https://github.com/rose-pine/neovim",            name = "rose-pine" },
@@ -67,6 +60,7 @@ lz.add({
   { src = "https://github.com/neogitorg/neogit",                          name = "neogit" },
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", name = "render-markdown" },
   { src = "https://github.com/jake-stewart/multicursor.nvim",             name = "multicursor-nvim" },
+  { src = "https://github.com/ibhagwan/fzf-lua",                          name = "fzf-lua" },
 })
 
 lz.very_lazy("lualine", function()
@@ -323,4 +317,45 @@ end, {
   { { "n" },           "<M-|>", function() mc().alignCursors() end },
   { { "x" },           "I",     function() mc().insertVisual() end },
   { { "x" },           "A",     function() mc().appendVisual() end },
+})
+
+local fzf_lua = function()
+  return require("fzf-lua")
+end
+
+lz.keys("fzf-lua", function()
+  fzf_lua().setup({
+    { "hide" },
+    winopts = {
+      relative = "editor",
+      row = 1,
+      col = 0,
+      width = 1,
+      height = 0.45,
+      border = "rounded",
+      preview = {
+        hidden = false,
+        layout = "horizontal",
+        horizontal = "right:50%",
+      },
+    },
+    fzf_opts = {
+      ["--layout"] = "reverse-list",
+    },
+    fzf_colors = {
+      ["bg"] = "-1",
+      ["gutter"] = "-1",
+    },
+  })
+end, {
+  { { "n" }, "gr",        function() fzf_lua().lsp_references() end },
+  { { "n" }, "gdf",       function() fzf_lua().lsp_definitions() end },
+  { { "n" }, "gdc",       function() fzf_lua().lsp_declarations() end },
+  { { "n" }, "gdt",       function() fzf_lua().lsp_typedefs() end },
+  { { "n" }, "gi",        function() fzf_lua().lsp_implementations() end },
+  { { "n" }, "<Leader>f", function() fzf_lua().files({ cwd = "." }) end },
+  { { "n" }, "<Leader>F", function() fzf_lua().files({ cwd = require("util").getroot() }) end },
+  { { "n" }, "<Leader>s", function() fzf_lua().lsp_document_symbols() end },
+  { { "n" }, "<Leader>S", function() fzf_lua().lsp_workspace_symbols() end },
+  { { "n" }, "<Leader>/", function() fzf_lua().live_grep() end },
 })
