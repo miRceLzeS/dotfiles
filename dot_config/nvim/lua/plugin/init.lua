@@ -94,7 +94,7 @@ lz.very_lazy("lualine", function()
           "branch",
           icon = "",
           seperator = "",
-          padding = { left = 1, right = 0 },
+          padding = { left = 1, right = 1 },
         },
         {
           "diff",
