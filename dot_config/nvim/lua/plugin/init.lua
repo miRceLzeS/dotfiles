@@ -73,6 +73,7 @@ lz.add({
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", name = "render-markdown" },
   { src = "https://github.com/jake-stewart/multicursor.nvim",             name = "multicursor-nvim" },
   { src = "https://github.com/ibhagwan/fzf-lua",                          name = "fzf-lua" },
+  { src = "https://github.com/stevearc/overseer.nvim",                    name = "overseer" },
 })
 
 lz.very_lazy("lualine", function()
@@ -355,4 +356,14 @@ end, {
   { { "n" }, "<Leader>s", function() fzf_lua().lsp_document_symbols() end },
   { { "n" }, "<Leader>S", function() fzf_lua().lsp_workspace_symbols() end },
   { { "n" }, "<Leader>/", function() fzf_lua().live_grep() end },
+})
+
+local overseer = function()
+  return require("overseer")
+end
+
+lz.keys("overseer", function()
+  overseer().setup()
+end, {
+  { { "n" }, "<Leader>r", "<Cmd>OverseerRun<CR>", { expr = true } }
 })
