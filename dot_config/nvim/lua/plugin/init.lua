@@ -95,8 +95,6 @@ lz.very_lazy("lualine", function()
   require("lualine").setup({
     options = {
       theme = theme,
-      component_separators = "",
-      section_separators = "",
       globalstatus = true,
     },
     sections = {
@@ -161,10 +159,10 @@ lz.very_lazy("smart-splits", function()
     ["<C-h>"] = sp.move_cursor_left,
     ["<C-l>"] = sp.move_cursor_right,
 
-    ["<C-Up>"] = sp.resize_up,
-    ["<C-Down>"] = sp.resize_down,
-    ["<C-Left>"] = sp.resize_left,
-    ["<C-Right>"] = sp.resize_right,
+    ["<C-S-Up>"] = sp.resize_up,
+    ["<C-S-Down>"] = sp.resize_down,
+    ["<C-S-Left>"] = sp.resize_left,
+    ["<C-S-Right>"] = sp.resize_right,
 
     ["<C-x>k"] = function()
       sp.swap_buf_up()
@@ -187,21 +185,6 @@ lz.very_lazy("smart-splits", function()
     keymap.map({ "n", "x" }, lhs, rhs)
   end
 end)
-
--- lz.very_lazy("tree-sitter-manager", function()
--- require("tree-sitter-manager").setup({
--- ensure_installed = {
--- "c",
--- "cpp",
--- "rust",
--- "go",
--- "lua",
--- "python",
--- "markdown",
--- "markdown_inline",
--- },
--- })
--- end)
 
 lz.very_lazy("nvim-lspconfig", function()
   vim.lsp.config("lua_ls", {
@@ -262,13 +245,17 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
   })
 end)
 
-lz.very_lazy("quicker", function()
+lz.event("FileType", "quicker", function()
   local quicker = require("quicker")
+  keymap.map("n", "<Leader>q", function() quicker.toggle() end)
+  keymap.map("n", "<Leader>l", function() quicker.toggle({ loclist = true }) end)
   quicker.setup({
-    keys = { { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end } },
+    keys = {
+      { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end },
+    },
     highlight = { lsp = false },
   })
-end)
+end, { pattern = "qf" })
 
 lz.event("InsertEnter", "conform", function()
   require("conform").setup({ format_after_save = { lsp_format = "fallback" } })
@@ -361,9 +348,7 @@ lz.keys("fzf-lua", function()
   })
 end, {
   { { "n" }, "gr",        function() fzf_lua().lsp_references() end },
-  { { "n" }, "gdf",       function() fzf_lua().lsp_definitions() end },
-  { { "n" }, "gdc",       function() fzf_lua().lsp_declarations() end },
-  { { "n" }, "gdt",       function() fzf_lua().lsp_typedefs() end },
+  { { "n" }, "gd",        function() fzf_lua().lsp_definitions() end },
   { { "n" }, "gi",        function() fzf_lua().lsp_implementations() end },
   { { "n" }, "<Leader>f", function() fzf_lua().files({ cwd = "." }) end },
   { { "n" }, "<Leader>F", function() fzf_lua().files({ cwd = require("util").getroot() }) end },

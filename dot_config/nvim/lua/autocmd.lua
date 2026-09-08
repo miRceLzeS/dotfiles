@@ -63,16 +63,3 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end
   end,
 })
-
-vim.api.nvim_create_autocmd("WinLeave", {
-  callback = function(ev)
-    if vim.bo[ev.buf].buftype ~= "quickfix" then
-      return
-    end
-
-    local winid = vim.fn.win_getid()
-    vim.schedule(function()
-      pcall(vim.api.nvim_win_close, winid, true)
-    end)
-  end
-})

@@ -105,8 +105,7 @@ M.map({ "n", "x" }, "<Leader>D", function()
 end)
 
 -- == quickfix list ===
-M.map({ "n", "x" }, "<Leader>l", "<Cmd>lopen<CR>")
-M.map({ "n", "x" }, "<Leader>q", "<Cmd>copen<CR>")
+-- see ./plugin/init.lua quicker
 
 -- === plugin ===
 M.map({ "n" }, "<Leader>pu", vim.pack.update)
