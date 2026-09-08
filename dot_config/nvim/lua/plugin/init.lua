@@ -10,10 +10,11 @@ local lz = require("plugin.lz")
 
 -- [NOTE] loaded immediately
 lz.pack({
-  { src = "https://github.com/rose-pine/neovim",            name = "rose-pine" },
-  { src = "https://github.com/nvim-tree/nvim-web-devicons", name = "nvim-web-devicons" },
-  { src = "https://github.com/saghen/blink.lib",            name = "blink.lib" },
-  { src = "https://github.com/stevearc/oil.nvim",           name = "oil" },
+  { src = "https://github.com/rose-pine/neovim",                name = "rose-pine" },
+  { src = "https://github.com/nvim-tree/nvim-web-devicons",     name = "nvim-web-devicons" },
+  { src = "https://github.com/saghen/blink.lib",                name = "blink.lib" },
+  { src = "https://github.com/stevearc/oil.nvim",               name = "oil" },
+  { src = "https://github.com/nvim-treesitter/nvim-treesitter", name = "nvim-treesitter" },
 }, function()
   -- === color scheme ===
   require("rose-pine").setup({ styles = { transparency = true } })
@@ -43,13 +44,24 @@ lz.pack({
     view_options = { show_hidden = true },
   })
   keymap.map("n", "<Leader>o", "<Cmd>Oil<CR>")
+
+  -- === treesitter ===
+  require("nvim-treesitter").install({
+    "c",
+    "cpp",
+    "rust",
+    "go",
+    "lua",
+    "python",
+    "markdown",
+    "markdown_inline",
+  })
 end)
 
 -- [NOTE] loaded lazily
 lz.add({
   { src = "https://github.com/nvim-lualine/lualine.nvim",                 name = "lualine" },
   { src = "https://github.com/mrjones2014/smart-splits.nvim",             name = "smart-splits" },
-  { src = "https://github.com/romus204/tree-sitter-manager.nvim",         name = "tree-sitter-manager" },
   { src = "https://github.com/neovim/nvim-lspconfig",                     name = "nvim-lspconfig" },
   { src = "https://github.com/nvim-mini/mini.pairs",                      name = "mini.pairs" },
   { src = "https://github.com/nvim-mini/mini.surround",                   name = "mini.surround" },
@@ -176,20 +188,20 @@ lz.very_lazy("smart-splits", function()
   end
 end)
 
-lz.very_lazy("tree-sitter-manager", function()
-  require("tree-sitter-manager").setup({
-    ensure_installed = {
-      "c",
-      "cpp",
-      "rust",
-      "go",
-      "lua",
-      "python",
-      "markdown",
-      "markdown_inline",
-    },
-  })
-end)
+-- lz.very_lazy("tree-sitter-manager", function()
+-- require("tree-sitter-manager").setup({
+-- ensure_installed = {
+-- "c",
+-- "cpp",
+-- "rust",
+-- "go",
+-- "lua",
+-- "python",
+-- "markdown",
+-- "markdown_inline",
+-- },
+-- })
+-- end)
 
 lz.very_lazy("nvim-lspconfig", function()
   vim.lsp.config("lua_ls", {

@@ -13,6 +13,14 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.api.nvim_create_autocmd("PackChanged", {
+  callback = function(ev)
+    if ev.data.spec.name == "nvim-treesitter" and ev.data.kind == "update" then
+      require("nvim-treesitter").update()
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local lsp = vim.lsp
