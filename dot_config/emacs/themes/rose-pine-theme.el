@@ -138,7 +138,7 @@
     ;; Parentheses
     `(show-paren-match
        ((t (:foreground ,base
-                        :background ,rose
+                        :background ,gold
                         :weight bold))))
 
     `(show-paren-mismatch
