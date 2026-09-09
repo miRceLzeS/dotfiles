@@ -10,6 +10,7 @@ local opt = vim.opt
 -- === appearence ===
 opt.termguicolors = true
 opt.shortmess:append("aIc")
+opt.statuscolumn = "%C %s%=%l "
 
 opt.number = true
 opt.relativenumber = true
@@ -35,6 +36,21 @@ local tab_spaces = 2
 opt.tabstop = tab_spaces     -- number of visual spaces of a tab
 opt.shiftwidth = tab_spaces  -- number of spaces when auto indent
 opt.softtabstop = tab_spaces -- number of spaces of cursor's movement
+
+-- === fold ===
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldenable = true
+opt.foldcolumn = "1"
+opt.foldlevel = 99
+opt.foldlevelstart = 99
+opt.fillchars = {
+  foldopen = " ",
+  foldclose = "⋯",
+  fold = " ",
+  foldinner = " ",
+  foldsep = " ",
+}
 
 opt.ignorecase = true
 opt.smartcase = true

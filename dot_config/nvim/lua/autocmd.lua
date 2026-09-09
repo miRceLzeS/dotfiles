@@ -1,19 +1,20 @@
 local keymap = require("keymap")
+local autocmd = vim.api.nvim_create_autocmd
 
-vim.api.nvim_create_autocmd("TextYankPost", {
+autocmd("TextYankPost", {
   callback = function()
     vim.highlight.on_yank({ higroup = "IncSearch", timeout = 150 })
   end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
+autocmd("FileType", {
   pattern = "*",
   callback = function(ev)
     pcall(vim.treesitter.start, ev.buf)
   end,
 })
 
-vim.api.nvim_create_autocmd("PackChanged", {
+autocmd("PackChanged", {
   callback = function(ev)
     if ev.data.spec.name == "nvim-treesitter" and ev.data.kind == "update" then
       require("nvim-treesitter").update()
@@ -21,7 +22,23 @@ vim.api.nvim_create_autocmd("PackChanged", {
   end,
 })
 
-vim.api.nvim_create_autocmd("LspAttach", {
+-- persistent fold view
+autocmd("BufWinLeave", {
+  callback = function(ev)
+    if vim.bo[ev.buf].buftype == "" then
+      vim.cmd("silent! mkview")
+    end
+  end
+})
+autocmd("BufWinEnter", {
+  callback = function(ev)
+    if vim.bo[ev.buf].buftype == "" then
+      vim.cmd("silent! loadview")
+    end
+  end
+})
+
+autocmd("LspAttach", {
   callback = function(ev)
     local lsp = vim.lsp
 
@@ -53,7 +70,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-vim.api.nvim_create_autocmd("BufReadPost", {
+-- persistent cursor position
+autocmd("BufReadPost", {
   callback = function()
     local mark = vim.api.nvim_buf_get_mark(0, '"')
     local line_count = vim.api.nvim_buf_line_count(0)

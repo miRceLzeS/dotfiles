@@ -68,12 +68,13 @@ lz.add({
   { src = "https://github.com/saghen/blink.cmp",                          name = "blink.cmp" },
   { src = "https://github.com/stevearc/conform.nvim",                     name = "conform" },
   { src = "https://github.com/stevearc/quicker.nvim",                     name = "quicker" },
+  { src = "https://github.com/stevearc/overseer.nvim",                    name = "overseer" },
   { src = "https://github.com/lewis6991/gitsigns.nvim",                   name = "gitsigns" },
   { src = "https://github.com/neogitorg/neogit",                          name = "neogit" },
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim", name = "render-markdown" },
   { src = "https://github.com/jake-stewart/multicursor.nvim",             name = "multicursor-nvim" },
   { src = "https://github.com/ibhagwan/fzf-lua",                          name = "fzf-lua" },
-  { src = "https://github.com/stevearc/overseer.nvim",                    name = "overseer" },
+  { src = "https://github.com/MagicDuck/grug-far.nvim",                   name = "grug-far" },
 })
 
 lz.very_lazy("lualine", function()
@@ -262,6 +263,18 @@ lz.event("InsertEnter", "conform", function()
   require("conform").setup({ format_after_save = { lsp_format = "fallback" } })
 end)
 
+local overseer = function()
+  return require("overseer")
+end
+
+lz.keys("overseer", function()
+  overseer().setup()
+end, {
+  { { "n" }, "<Leader>tt", "<Cmd>OverseerToggle<CR>",      { expr = true } },
+  { { "n" }, "<Leader>tr", "<Cmd>OverseerRun<CR>",         { expr = true } },
+  { { "n" }, "<Leader>ta", "<Cmd>OverseerTaskAction<CR>",  { expr = true } },
+})
+
 lz.very_lazy("gitsigns", function()
   require("gitsigns").setup({
     signs = {
@@ -289,9 +302,9 @@ lz.keys("neogit", nil, {
   { { "n", "x" }, "<Leader>g", "<Cmd>Neogit<CR>", { expr = true } },
 })
 
-lz.very_lazy("render-markdown", function()
+lz.event("BufReadPost", "render-markdown", function()
   require("render-markdown").setup({ completions = { lsp = { enabled = true } } })
-end)
+end, { pattern = "*.md" })
 
 local mc = function()
   return require("multicursor-nvim")
@@ -358,12 +371,12 @@ end, {
   { { "n" }, "<Leader>/", function() fzf_lua().live_grep() end },
 })
 
-local overseer = function()
-  return require("overseer")
+local grug_far = function()
+  return require("grug-far")
 end
 
-lz.keys("overseer", function()
-  overseer().setup()
+lz.keys("grug-far", function()
+  grug_far().setup()
 end, {
-  { { "n" }, "<Leader>r", "<Cmd>OverseerRun<CR>", { expr = true } }
+  { { "n" }, "<Leader>r", "<Cmd>GrugFar<CR>", { expr = true } }
 })
