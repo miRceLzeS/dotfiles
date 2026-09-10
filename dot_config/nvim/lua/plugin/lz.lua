@@ -63,6 +63,10 @@ function M.keys(name, config, opts)
     local rhs = opt[3]
     local map_opts = opt[4] or {}
 
+    if type(rhs) == "string" then
+      map_opts = vim.tbl_extend("force", map_opts, { expr = true })
+    end
+
     require("keymap").map(mode, lhs, function()
       M.load(name, config)
 

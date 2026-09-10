@@ -57,8 +57,10 @@ M.map("x", "<M-Down>", ":m '>+1<CR>gv=gv")
 M.map("i", "<M-Up>", "<Esc><Cmd>m .-2<CR>==gi")
 M.map("i", "<M-Down>", "<Esc><Cmd>m .+1<CR>==gi")
 
-M.map({ "n", "x" }, "<M-b>", "<gv")
-M.map({ "n", "x" }, "<M-f>", ">gv")
+M.map("n", "<M-Left>", "<<")
+M.map("n", "<M-Right>", ">>")
+M.map("x", "<M-Left>", "<gv")
+M.map("x", "<M-Right>", ">gv")
 
 M.map({ "n", "x", "i" }, "<M-d>", "mzyyp`zj", { desc = "Duplicate current line" })
 

@@ -3,6 +3,9 @@ font-family = "Maple Mono NF CN"
 font-size = 20
 cursor-style-blink = false
 macos-option-as-alt = left
+keybind = alt+left=csi:1;3D
+keybind = alt+right=csi:1;3C
+keybind = alt+up=csi:1;3A
+keybind = alt+down=csi:1;3B
 shell-integration-features = ssh-terminfo,ssh-env
-window-decoration = false
 config-file = ?shader.conf

@@ -270,9 +270,9 @@ end
 lz.keys("overseer", function()
   overseer().setup()
 end, {
-  { { "n" }, "<Leader>tt", "<Cmd>OverseerToggle<CR>",      { expr = true } },
-  { { "n" }, "<Leader>tr", "<Cmd>OverseerRun<CR>",         { expr = true } },
-  { { "n" }, "<Leader>ta", "<Cmd>OverseerTaskAction<CR>",  { expr = true } },
+  { { "n" }, "<Leader>tt", "<Cmd>OverseerToggle<CR>" },
+  { { "n" }, "<Leader>tr", "<Cmd>OverseerRun<CR>" },
+  { { "n" }, "<Leader>ta", "<Cmd>OverseerTaskAction<CR>" },
 })
 
 lz.very_lazy("gitsigns", function()
@@ -299,7 +299,7 @@ lz.very_lazy("gitsigns", function()
 end)
 
 lz.keys("neogit", nil, {
-  { { "n", "x" }, "<Leader>g", "<Cmd>Neogit<CR>", { expr = true } },
+  { { "n", "x" }, "<Leader>g", "<Cmd>Neogit<CR>" },
 })
 
 lz.event("BufReadPost", "render-markdown", function()
@@ -364,11 +364,25 @@ end, {
   { { "n" }, "gr",        function() fzf_lua().lsp_references() end },
   { { "n" }, "gd",        function() fzf_lua().lsp_definitions() end },
   { { "n" }, "gi",        function() fzf_lua().lsp_implementations() end },
-  { { "n" }, "<Leader>f", function() fzf_lua().files({ cwd = "." }) end },
-  { { "n" }, "<Leader>F", function() fzf_lua().files({ cwd = require("util").getroot() }) end },
   { { "n" }, "<Leader>s", function() fzf_lua().lsp_document_symbols() end },
   { { "n" }, "<Leader>S", function() fzf_lua().lsp_workspace_symbols() end },
   { { "n" }, "<Leader>/", function() fzf_lua().live_grep() end },
+  { { "n" }, "<Leader>f", function() fzf_lua().files({ cwd = vim.uv.cwd() }) end },
+  { { "n" }, "<Leader>F", function() fzf_lua().files({ cwd = require("util").getroot() }) end },
+  { { "n" }, "<Leader>h", function()
+    fzf_lua().oldfiles({
+      cwd = vim.uv.cwd(),
+      cwd_only = true,
+      include_current_session = true,
+    })
+  end },
+  { { "n" }, "<Leader>H", function()
+    fzf_lua().oldfiles({
+      cwd = require("util").getroot(),
+      cwd_only = true,
+      include_current_session = true,
+    })
+  end },
 })
 
 local grug_far = function()
@@ -376,7 +390,9 @@ local grug_far = function()
 end
 
 lz.keys("grug-far", function()
-  grug_far().setup()
+  grug_far().setup({
+    windowCreationCommand = "botright split"
+  })
 end, {
-  { { "n" }, "<Leader>r", "<Cmd>GrugFar<CR>", { expr = true } }
+  { { "n" }, "<Leader>r", "<Cmd>GrugFar<CR>" }
 })
