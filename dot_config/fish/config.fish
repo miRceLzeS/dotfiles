@@ -24,6 +24,12 @@ if test (uname) = Darwin
     if type -q brew
         fish_add_path -m (brew --prefix)/bin
     end
+
+    set -l lldb_dap (xcrun --find lldb-dap 2>/dev/null)
+
+    if test -n "$lldb_dap"
+      fish_add_path (dirname "$lldb_dap")
+    end
 end
 
 # [INFO] global variables

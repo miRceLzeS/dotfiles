@@ -1,20 +1,16 @@
 local keymap = require("keymap")
-
--- [NOTE] builtin plugins
-vim.cmd.packadd("nvim.undotree")
-keymap.map("n", "<Leader>uu", "<Cmd>Undotree<CR>")
-
+--
 -- [NOTE] custom plugins
 -- === lazy wrapper ===
 local lz = require("plugin.lz")
 
 -- [NOTE] loaded immediately
 lz.pack({
-  { src = "https://github.com/rose-pine/neovim",                name = "rose-pine" },
-  { src = "https://github.com/nvim-tree/nvim-web-devicons",     name = "nvim-web-devicons" },
-  { src = "https://github.com/saghen/blink.lib",                name = "blink.lib" },
-  { src = "https://github.com/stevearc/oil.nvim",               name = "oil" },
-  { src = "https://github.com/nvim-treesitter/nvim-treesitter", name = "nvim-treesitter" },
+  { src = "https://github.com/rose-pine/neovim",            name = "rose-pine" },
+  { src = "https://github.com/nvim-tree/nvim-web-devicons", name = "nvim-web-devicons" },
+  -- { src = "https://github.com/saghen/blink.lib",            name = "blink.lib" },
+  { src = "https://github.com/stevearc/oil.nvim",           name = "oil" },
+  --{ src = "https://github.com/nvim-treesitter/nvim-treesitter", name = "nvim-treesitter" },
 }, function()
   -- === color scheme ===
   require("rose-pine").setup({ styles = { transparency = true } })
@@ -46,16 +42,16 @@ lz.pack({
   keymap.map("n", "<Leader>o", "<Cmd>Oil<CR>")
 
   -- === treesitter ===
-  require("nvim-treesitter").install({
-    "c",
-    "cpp",
-    "rust",
-    "go",
-    "lua",
-    "python",
-    "markdown",
-    "markdown_inline",
-  })
+  -- require("nvim-treesitter").install({
+  -- "c",
+  -- "cpp",
+  -- "rust",
+  -- "go",
+  -- "lua",
+  -- "python",
+  -- "markdown",
+  -- "markdown_inline",
+  -- })
 end)
 
 -- [NOTE] loaded lazily
@@ -65,7 +61,7 @@ lz.add({
   { src = "https://github.com/neovim/nvim-lspconfig",                     name = "nvim-lspconfig" },
   { src = "https://github.com/nvim-mini/mini.pairs",                      name = "mini.pairs" },
   { src = "https://github.com/nvim-mini/mini.surround",                   name = "mini.surround" },
-  { src = "https://github.com/saghen/blink.cmp",                          name = "blink.cmp" },
+  -- { src = "https://github.com/saghen/blink.cmp",                          name = "blink.cmp" },
   { src = "https://github.com/stevearc/conform.nvim",                     name = "conform" },
   { src = "https://github.com/stevearc/quicker.nvim",                     name = "quicker" },
   { src = "https://github.com/stevearc/overseer.nvim",                    name = "overseer" },
@@ -214,38 +210,38 @@ lz.event({ "CmdlineEnter", "InsertEnter" }, "mini.surround", function()
   require("mini.surround").setup()
 end)
 
-lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
-  local cmp = require("blink.cmp")
-  cmp.build():pwait()
-  cmp.setup({
-    keymap = {
-      preset = "none",
-      ["<C-n>"] = { "select_next", "fallback" },
-      ["<C-p>"] = { "select_prev", "fallback" },
-      ["<Tab>"] = { "select_next", "fallback" },
-      ["<S-Tab>"] = { "select_prev", "fallback" },
-      ["<Enter>"] = { "accept", "fallback" },
-      ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-      ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-    },
-    cmdline = {
-      keymap = {
-        preset = "inherit",
-        ["<Tab>"] = { "show", "select_next", "fallback" },
-        ["<Enter>"] = { "fallback" },
-      },
-      completion = {
-        list = { selection = { preselect = false, auto_insert = true } },
-        menu = { auto_show = true },
-      },
-    },
-    completion = {
-      list = { selection = { preselect = false, auto_insert = false } },
-      menu = { auto_show = true },
-      documentation = { auto_show = true, auto_show_delay_ms = 0 },
-    }
-  })
-end)
+-- lz.event({ "CmdlineEnter", "InsertEnter" }, "blink.cmp", function()
+--   local cmp = require("blink.cmp")
+--   cmp.build():pwait()
+--   cmp.setup({
+--     keymap = {
+--       preset = "none",
+--       ["<C-n>"] = { "select_next", "fallback" },
+--       ["<C-p>"] = { "select_prev", "fallback" },
+--       ["<Tab>"] = { "select_next", "fallback" },
+--       ["<S-Tab>"] = { "select_prev", "fallback" },
+--       ["<Enter>"] = { "accept", "fallback" },
+--       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+--       ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+--     },
+--     cmdline = {
+--       keymap = {
+--         preset = "inherit",
+--         ["<Tab>"] = { "show", "select_next", "fallback" },
+--         ["<Enter>"] = { "fallback" },
+--       },
+--       completion = {
+--         list = { selection = { preselect = false, auto_insert = true } },
+--         menu = { auto_show = true },
+--       },
+--     },
+--     completion = {
+--       list = { selection = { preselect = false, auto_insert = false } },
+--       menu = { auto_show = true },
+--       documentation = { auto_show = true, auto_show_delay_ms = 0 },
+--     }
+--   })
+-- end)
 
 lz.event("FileType", "quicker", function()
   local quicker = require("quicker")

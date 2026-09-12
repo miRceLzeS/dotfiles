@@ -28,7 +28,10 @@ M.del({ "n", "v", "i" }, "<C-p>")
 M.map("n", "<Esc>", "<Cmd>nohlsearch<CR>")
 M.map("t", "<Esc>", "<C-\\><C-n>")
 
-M.map("n", "U", "<C-r>")
+-- undo / redo
+M.map("n", "U", "<C-r>", { desc = "Redo" })
+vim.cmd.packadd("nvim.undotree")
+M.map("n", "<Leader>uu", "<Cmd>Undotree<CR>")
 
 M.map({ "n", "x" }, "<C-u>", "<C-u>zz")
 M.map({ "n", "x" }, "<C-d>", "<C-d>zz")
