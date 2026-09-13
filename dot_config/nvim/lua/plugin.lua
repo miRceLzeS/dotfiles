@@ -296,12 +296,12 @@ local multicursor_ensure_setup = function()
   if not multicursor then
     multicursor = require("multicursor-nvim")
     multicursor.setup()
-    multicursor().addKeymapLayer(function(layerset)
+    multicursor.addKeymapLayer(function(layerset)
       layerset({ "n" }, "<Esc>", function()
-        if not multicursor().cursorsEnabled() then
-          multicursor().enableCursors()
+        if not multicursor.cursorsEnabled() then
+          multicursor.enableCursors()
         else
-          multicursor().clearCursors()
+          multicursor.clearCursors()
         end
       end)
     end)
