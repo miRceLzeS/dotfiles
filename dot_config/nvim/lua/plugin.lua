@@ -191,46 +191,45 @@ end, { expr = true })
 -- ==========
 
 -- completion
--- autocmd({ "CmdlineEnter", "InsertEnter" }, {
---   once = true,
---   callback = function()
---     packadd({
---       "https://github.com/saghen/blink.lib",
---       "https://github.com/saghen/blink.cmp",
---     })
---
---     local cmp = require("blink.cmp")
---     cmp.build():pwait()
---     cmp.setup({
---       keymap = {
---         preset = "none",
---         ["<C-n>"] = { "select_next", "fallback" },
---         ["<C-p>"] = { "select_prev", "fallback" },
---         ["<Tab>"] = { "select_next", "fallback" },
---         ["<S-Tab>"] = { "select_prev", "fallback" },
---         ["<Enter>"] = { "accept", "fallback" },
---         ["<C-u>"] = { "scroll_documentation_up", "fallback" },
---         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
---       },
---       cmdline = {
---         keymap = {
---           preset = "inherit",
---           ["<Tab>"] = { "show", "select_next", "fallback" },
---           ["<Enter>"] = { "fallback" },
---         },
---         completion = {
---           list = { selection = { preselect = false, auto_insert = true } },
---           menu = { auto_show = true },
---         },
---       },
---       completion = {
---         list = { selection = { preselect = false, auto_insert = false } },
---         menu = { auto_show = true },
---         documentation = { auto_show = true, auto_show_delay_ms = 0 },
---       }
---     })
---   end
--- })
+autocmd({ "CmdlineEnter", "InsertEnter" }, {
+  once = true,
+  callback = function()
+    packadd({
+      "https://github.com/saghen/blink.lib",
+      "https://github.com/saghen/blink.cmp",
+    })
+    local cmp = require("blink.cmp")
+    cmp.build():pwait()
+    cmp.setup({
+      keymap = {
+        preset = "none",
+        ["<C-n>"] = { "select_next", "fallback" },
+        ["<C-p>"] = { "select_prev", "fallback" },
+        ["<Tab>"] = { "select_next", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "fallback" },
+        ["<Enter>"] = { "accept", "fallback" },
+        ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+        ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+      },
+      cmdline = {
+        keymap = {
+          preset = "inherit",
+          ["<Tab>"] = { "show", "select_next", "fallback" },
+          ["<Enter>"] = { "fallback" },
+        },
+        completion = {
+          list = { selection = { preselect = false, auto_insert = true } },
+          menu = { auto_show = true },
+        },
+      },
+      completion = {
+        list = { selection = { preselect = false, auto_insert = false } },
+        menu = { auto_show = true },
+        documentation = { auto_show = true, auto_show_delay_ms = 0 },
+      }
+    })
+  end
+})
 
 lazy(function()
   packadd({ "https://github.com/nvim-treesitter/nvim-treesitter" })
