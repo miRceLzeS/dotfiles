@@ -30,7 +30,7 @@ local lazy = function(fn)
     group = group,
     pattern = "VeryLazy",
     once = true,
-    callback = function() fn() end,
+    callback = function() if type(fn) == "function" then fn() end end,
   })
 end
 
@@ -153,42 +153,51 @@ end)
 -- Editor
 -- ==========
 
-local oil
-local oil_ensure_setup = function()
-  packadd({ "https://github.com/stevearc/oil.nvim" })
-
-  if not oil then
-    oil = require("oil")
-    oil.setup({
-      columns = {
-        "permissions",
-        "size",
-        "mtime",
-        "icon",
-      },
-      use_default_keymaps = false,
-      keymaps = {
-        ["H"] = { "actions.parent", mode = "n" },
-        ["L"] = { "actions.select", mode = "n" },
-        ["<CR>"] = { "actions.select", mode = "n" },
-        ["<Tab>"] = { "actions.preview", mode = "n" },
-        ["."] = { "actions.open_cwd", mode = "n" },
-        ["q"] = { "actions.close", mode = "n" },
-        ["<Leader>r"] = { "actions.refresh", mode = "n" },
-      },
-      view_options = { show_hidden = true },
-    })
-  end
-end
-
-keymap.map({ "n", "x" }, "<Leader>o", function()
-  oil_ensure_setup()
-  return "<Cmd>Oil<CR>"
-end, { expr = true })
+packadd({ "https://github.com/stevearc/oil.nvim" })
+require("oil").setup({
+  columns = {
+    "permissions",
+    "size",
+    "mtime",
+    "icon",
+  },
+  use_default_keymaps = false,
+  keymaps = {
+    ["H"] = { "actions.parent", mode = "n" },
+    ["L"] = { "actions.select", mode = "n" },
+    ["<CR>"] = { "actions.select", mode = "n" },
+    ["<Tab>"] = { "actions.preview", mode = "n" },
+    ["."] = { "actions.open_cwd", mode = "n" },
+    ["q"] = { "actions.close", mode = "n" },
+    ["<Leader>r"] = { "actions.refresh", mode = "n" },
+  },
+  view_options = { show_hidden = true },
+})
+keymap.map({ "n", "x" }, "<Leader>o", "<Cmd>Oil<CR>")
 
 -- ==========
 -- Editing
 -- ==========
+
+-- lsp
+packadd({ "https://github.com/neovim/nvim-lspconfig" })
+
+vim.lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" },
+      },
+    },
+  },
+})
+
+vim.lsp.enable({
+  "clangd",
+  "rust_analyzer",
+  "gopls",
+  "lua_ls",
+})
 
 -- completion
 autocmd({ "CmdlineEnter", "InsertEnter" }, {
@@ -242,27 +251,6 @@ lazy(function()
     "python",
     "markdown",
     "markdown_inline",
-  })
-end)
-
-lazy(function()
-  packadd({ "https://github.com/neovim/nvim-lspconfig" })
-
-  vim.lsp.config("lua_ls", {
-    settings = {
-      Lua = {
-        diagnostics = {
-          globals = { "vim" },
-        },
-      },
-    },
-  })
-
-  vim.lsp.enable({
-    "clangd",
-    "rust_analyzer",
-    "gopls",
-    "lua_ls",
   })
 end)
 
@@ -324,7 +312,7 @@ end)
 
 keymap.map({ "n", "x", "i" }, "<M-n>", function()
   multicursor_ensure_setup()
-  multicursor.lineAddCursor(1)
+  multicursor.matchAddCursor(1)
 end)
 
 keymap.map({ "n", "x", "i" }, "<M-a>", function()
@@ -352,10 +340,15 @@ end)
 -- ==========
 
 lazy(function()
+  packadd({ "https://github.com/smart-splits-nvim/backend-tmux" })
   packadd({ "https://github.com/mrjones2014/smart-splits.nvim" })
 
   local sp = require("smart-splits")
-  sp.setup()
+  sp.setup({
+    mux = { backend = "smart-splits-backend-tmux" },
+    move = { at_edge = "wrap" },
+    swap = { move_cursor = true },
+  })
 
   local mappings = {
     ["<C-k>"] = sp.move_cursor_up,
@@ -368,22 +361,10 @@ lazy(function()
     ["<C-S-Left>"] = sp.resize_left,
     ["<C-S-Right>"] = sp.resize_right,
 
-    ["<C-x>k"] = function()
-      sp.swap_buf_up()
-      vim.cmd("wincmd k")
-    end,
-    ["<C-x>j"] = function()
-      sp.swap_buf_down()
-      vim.cmd("wincmd j")
-    end,
-    ["<C-x>h"] = function()
-      sp.swap_buf_left()
-      vim.cmd("wincmd h")
-    end,
-    ["<C-x>l"] = function()
-      sp.swap_buf_right()
-      vim.cmd("wincmd l")
-    end,
+    ["<C-x>k"] = sp.swap_buf_up,
+    ["<C-x>j"] = sp.swap_buf_down,
+    ["<C-x>h"] = sp.swap_buf_left,
+    ["<C-x>l"] = sp.swap_buf_right,
   }
   for lhs, rhs in pairs(mappings) do
     keymap.map({ "n", "x" }, lhs, rhs)
@@ -398,14 +379,12 @@ autocmd("InsertEnter", {
   end
 })
 
-autocmd("FileType", {
-  once = true,
-  callback = function()
-    packadd({ "https://github.com/stevearc/quicker.nvim" })
+local quicker
+local quicker_ensure_setup = function()
+  packadd({ "https://github.com/stevearc/quicker.nvim" })
 
-    local quicker = require("quicker")
-    keymap.map("n", "<Leader>q", function() quicker.toggle() end)
-    keymap.map("n", "<Leader>l", function() quicker.toggle({ loclist = true }) end)
+  if not quicker then
+    quicker = require("quicker")
     quicker.setup({
       keys = {
         { "<Tab>", function() quicker.toggle_expand({ before = 4, after = 4 }) end },
@@ -413,7 +392,25 @@ autocmd("FileType", {
       highlight = { lsp = false },
     })
   end
+end
+
+autocmd("FileType", {
+  once = true,
+  pattern = "qf",
+  callback = function()
+    quicker_ensure_setup()
+  end
 })
+
+keymap.map("n", "<Leader>q", function()
+  quicker_ensure_setup()
+  quicker.toggle()
+end)
+
+keymap.map("n", "<Leader>l", function()
+  quicker_ensure_setup()
+  quicker.toggle({ loclist = true })
+end)
 
 local overseer
 local overseer_ensure_setup = function()
@@ -441,12 +438,16 @@ keymap.map({ "n", "x" }, "<Leader>ta", function()
 end, { expr = true })
 
 local neogit
-keymap.map({ "n", "x" }, "<Leader>g", function()
+local neogit_ensure_setup = function()
   packadd({ "https://github.com/neogitorg/neogit" })
 
   if not neogit then
     neogit = require("neogit")
   end
+end
+
+keymap.map({ "n", "x" }, "<Leader>g", function()
+  neogit_ensure_setup()
   return "<Cmd>Neogit<CR>"
 end, { expr = true })
 
